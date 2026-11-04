@@ -84,6 +84,27 @@ export class SpecBoardService {
   private async panel(p: SpecPanelDef, w: TimeWindow): Promise<SpecPanelData> {
     if (p.kind === 'text') return { kind: 'text', text: p.text ?? '' };
     const win: QueryWindow = { start: w.start, end: w.end, granularity: w.granularity };
+    if (p.kind === 'table' && p.columns && p.columns.length > 0) {
+      const recs = (await this.db.execute(this.qb.buildRecords(p, p.timeField ? win : null))) as unknown as Row[];
+      const tm: SpecTableMap | undefined = p.table ? SPEC_BUNDLE.tables[p.table] : undefined;
+      return {
+        kind: 'table',
+        table: {
+          columns: p.columns.map((name: string, i: number) => {
+            const numeric: boolean = tm?.fields[name]?.type === 'number';
+            return { key: `c${i}`, label: name, format: numeric ? 'number' : 'text', align: numeric ? 'right' : 'left' };
+          }),
+          rows: recs.map((r: Row) => {
+            const out: Record<string, string | number | null> = {};
+            (p.columns ?? []).forEach((_n: string, i: number) => {
+              const v: unknown = r[`c${i}`];
+              out[`c${i}`] = v === null || v === undefined ? null : typeof v === 'number' ? v : String(v);
+            });
+            return out;
+          }),
+        },
+      };
+    }
     const rows: Row[] = await this.run(p, p.timeField ? win : null);
 
     if (p.kind === 'kpi') {

@@ -48,7 +48,9 @@ export interface SpecPanelDef {
   measures: SpecMeasure[];
   dimensions: SpecDimension[];
   filter?: { conjunction: 'and' | 'or'; conditions: SpecCondition[] };
-  sort?: { by: 'value' | 'dimension'; order: 'asc' | 'desc' };
+  sort?: { by: 'value' | 'dimension' | 'field'; field?: string; order: 'asc' | 'desc' };
+  /** 记录清单模式（仅 table）：逐条列出这些字段，不做汇总；配合 filter / sort / limit */
+  columns?: string[];
   limit?: number;
   /** ratio：指标卡取 m0 / m1（完成率、赢单率、SLA 达成率…） */
   compute?: 'ratio';

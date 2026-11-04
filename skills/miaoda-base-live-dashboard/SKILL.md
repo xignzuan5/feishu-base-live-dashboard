@@ -1,6 +1,6 @@
 ---
 name: miaoda-base-live-dashboard
-description: 把飞书多维表格变成妙搭上的「实时」数据看板应用：多维表格流式同步进应用数据库，看板每 5 秒刷新，改表后 5~10 秒可见。需求可以来自飞书会议（从纪要和逐字稿提炼）、已有的多维表格仪表盘（一键迁移，并逐项核对数字）或行业模板（零售连锁、工作管理、客户管理）。提供 8 套风格、8 种排版，每个面板都能切换图表类型；有模板中心和投屏大屏，自带设计检查，保证专业、不像 AI 生成。当用户说「基于多维表格做看板 / 驾驶舱 / 大屏 / BI」「把多维表格仪表盘搬到妙搭」「根据会议需求做个看板」「妙搭看板」「工作管理 / 客户管理看板」「做个演示看板」时使用。只要在多维表格里加一个原生仪表盘、不需要独立应用时，改用 lark-base 的 Dashboard。
+description: 把飞书多维表格变成妙搭上的「实时」数据看板应用：多维表格流式同步进应用数据库，看板每 5 秒刷新，改表后 5~10 秒可见。需求可以来自飞书会议（从纪要和逐字稿提炼）、已有的多维表格仪表盘（一键迁移，并逐项核对数字）、飞书画板里画的样子、图片（手绘拍照、别家 BI 截图、设计稿，自动识别图表类型和布局），或行业模板（零售连锁、工作管理、客户管理）。提供 8 套风格、8 种排版，每个面板都能切换图表类型；有模板中心和投屏大屏，自带设计检查，保证专业、不像 AI 生成。当用户说「基于多维表格做看板 / 驾驶舱 / 大屏 / BI」「把多维表格仪表盘搬到妙搭」「根据会议需求做个看板」「照着画板 / 这张图 / 这个截图做个看板」「妙搭看板」「工作管理 / 客户管理看板」「做个演示看板」时使用。只要在多维表格里加一个原生仪表盘、不需要独立应用时，改用 lark-base 的 Dashboard。
 ---
 
 # 多维表格 → 妙搭实时看板
@@ -8,9 +8,10 @@ description: 把飞书多维表格变成妙搭上的「实时」数据看板应�
 数据留在飞书多维表格，业务同学照常录入、改数。妙搭应用通过官方 Base 流式同步把表实时复制进应用数据库，看板每 5 秒轮询一次，新增或修改的记录 5~10 秒内上屏。
 
 ```
-飞书会议纪要 ─┐
-原生仪表盘 ────┼─► dashboard-spec.json ─► 看板引擎（不用写查询）─┐
-行业模板 ─────┘                                                ├─► 妙搭看板：8 风格 × 8 排版 × 可切换图表
+飞书会议纪要 ──────────────┐
+原生仪表盘 ─────────────────┤
+飞书画板 / 图片 ─► 线框稿 ───┼─► dashboard-spec.json ─► 看板引擎（不用写查询）─┐
+行业模板 ──────────────────┘                                                ├─► 妙搭看板：8 风格 × 8 排版 × 可切换图表
 飞书多维表格 ──流式同步（秒级）──► 应用数据库 PG ──5 秒轮询────────┘
 ```
 
@@ -27,7 +28,7 @@ description: 把飞书多维表格变成妙搭上的「实时」数据看板应�
 
 | 能力 | 内容 | 详见 |
 |---|---|---|
-| 需求来源 | 飞书会议 / 原生仪表盘迁移 / 行业模板 / 现场问答，产出统一的 `dashboard-spec.json` | [dashboard-spec.md](references/dashboard-spec.md) |
+| 需求来源 | 飞书会议 / 原生仪表盘迁移 / 飞书画板 / 图片 / 行业模板 / 现场问答，产出统一的 `dashboard-spec.json` | [inputs.md](references/inputs.md)、[dashboard-spec.md](references/dashboard-spec.md) |
 | 行业模板 | 零售连锁（5 个精排看板 + 大屏）、工作管理、客户管理（各 2 个看板），带一键造数 | [catalog.md](references/catalog.md) |
 | 风格 | 深烘焙、燕麦白、霓虹大屏、晴空、墨石、青瓷、深海、松针（配色都过色盲与对比度校验） | catalog.md |
 | 排版 | 原始布局、管理层简报、指挥中心、分析工作台、个人工作台、记分对比、杂志式、单列聚焦 | catalog.md |
@@ -44,7 +45,7 @@ description: 把飞书多维表格变成妙搭上的「实时」数据看板应�
 
 | 决策 | 选项 | 默认 |
 |---|---|---|
-| 需求从哪来 | 飞书会议 / 已有多维表格仪表盘 / 行业模板 / 现在聊 | 用户给了会议或仪表盘链接就用它 |
+| 需求从哪来 | 飞书会议 / 已有多维表格仪表盘 / 飞书画板 / 图片 / 行业模板 / 现在聊 | 用户给了链接或图片就用它 |
 | 数据从哪来 | 用户的多维表格（给链接）/ 演示数据（零售连锁、工作管理、客户管理） | 没给链接就用演示数据 |
 | 设计调性 | 克制 / 商务 / 人文 / 科技 → 决定风格和排版 | 按受众推：老板周会 → 商务，值守 → 克制，投屏 → 科技 |
 | 是否发布上线 | 发布（线上链接默认仅本人可见）/ 只在本地预览 | 发布前单独确认一次 |
@@ -55,8 +56,13 @@ description: 把飞书多维表格变成妙搭上的「实时」数据看板应�
 
 ### 1. 需求 → dashboard-spec.json
 
+四种输入怎么选、各自识别什么，见 [inputs.md](references/inputs.md)。
+
 - **飞书会议**：按 [requirements-from-meeting.md](references/requirements-from-meeting.md)：定位会议 → 读逐字稿原话 → 按清单提炼 → 待定口径用选择框问 → 画 ASCII 线框图确认
 - **原生仪表盘**：`python3 $SKILL/scripts/import_base_dashboard.py --base-url <链接> --dashboard <名称>`（不带 `--dashboard` 先列出全部），自动产出需求说明、迁移报告和原值快照
+- **飞书画板**：`whiteboard_to_wireframe.py --whiteboard-token <token>` 读原生节点，识别每个框的图表类型、位置、标题 → `wireframe_to_spec.py --wireframe wireframe.json --base-url <链接>` 对上表和字段 → 待确认问题用选择框问
+- **图片**（手绘拍照、别家 BI 截图、设计稿）：agent 读图，按 inputs.md 的识别规则写 `wireframe.json`，之后同画板
+- 画板 / 图片生成后，用 `compare_images.py` 出「草图 vs 成品」对照图给用户确认
 - **行业模板**：`assets/specs/{work,crm}.spec.json`，把表名、字段名换成用户的
 - 检查：`python3 $SKILL/scripts/lint_spec.py dashboard-spec.json`，🔴 必须为 0
 
@@ -141,6 +147,9 @@ python3 $SKILL/scripts/sync_base_to_miaoda.py sync-plan.json --heal --environmen
 | 路径 | 作用 |
 |---|---|
 | `scripts/import_base_dashboard.py` | 原生仪表盘 → 需求说明 + 迁移报告 + 原值快照 |
+| `scripts/whiteboard_to_wireframe.py` + `wireframe_lib.py` | 飞书画板 → 线框稿（图表类型识别、栅格换算、ASCII 预览） |
+| `scripts/wireframe_to_spec.py` | 线框稿（画板 / 图片）→ 需求说明草稿 + 待确认问题 |
+| `scripts/compare_images.py` | 「输入草图 vs 生成看板」对照图 |
 | `scripts/verify_spec_board.py` | 迁移口径核对（原值 vs 新看板） |
 | `scripts/lint_spec.py` | 需求说明设计检查 |
 | `scripts/build_spec_bundle.py` | 需求说明 → 看板引擎配置 |
@@ -154,4 +163,4 @@ python3 $SKILL/scripts/sync_base_to_miaoda.py sync-plan.json --heal --environmen
 | `template/client/src/dashboard/` | 组件库：8 风格、8 排版、实体配色、全部面板、外壳 |
 | `template/client/src/pages/dashboard/` | 内置看板、配置驱动看板页、模板中心 |
 | `assets/specs/`、`assets/sync-plans/` | 行业模板需求说明与同步计划 |
-| `references/` | 需求格式、目录、会议梳理、设计质量、改造指南、踩坑 |
+| `references/` | 四种输入、需求格式、目录、会议梳理、设计质量、改造指南、踩坑 |

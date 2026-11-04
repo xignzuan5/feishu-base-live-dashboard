@@ -232,6 +232,53 @@ export class SpecQueryBuilder {
     return sql.join(parts, sql` `);
   }
 
+  /** 单个字段的展示表达式（记录清单用）：关联显示对方主字段，日期按业务时区格式化 */
+  private displayExpr(t: SpecTableMap, tableName: string, name: string, i: number, joins: SQL[]): SQL {
+    const f: SpecFieldMap = this.field(t, tableName, name);
+    if (f.type === 'link') {
+      const tgt: SpecTableMap = this.table(f.target);
+      const primary: SpecFieldMap = this.field(tgt, f.target ?? '', tgt.primary);
+      const alias = `r${i}`;
+      joins.push(sql`LEFT JOIN ${id(tgt.pg)} AS ${id(alias)} ON ${linkFirst('t', f.col)} = ${col(alias, 'base_record_id')}`);
+      return sql`${col(alias, primary.col)}::text`;
+    }
+    if (f.type === 'datetime') return sql`to_char(${this.localTs(f)}, 'YYYY-MM-DD HH24:MI')`;
+    if (f.type === 'date') return sql`to_char(${col('t', f.col)}, 'YYYY-MM-DD')`;
+    if (f.type === 'multiselect') return sql`array_to_string(${col('t', f.col)}, '、')`;
+    if (f.type === 'checkbox') return sql`CASE WHEN ${col('t', f.col)} THEN '是' ELSE '否' END`;
+    if (f.type === 'number') return sql`${col('t', f.col)}`;
+    return sql`${col('t', f.col)}::text`;
+  }
+
+  /** 记录清单：逐条列出指定字段（逾期清单、待跟进客户清单…） */
+  buildRecords(p: SpecPanelDef, win: QueryWindow | null): SQL {
+    const tableName: string = p.table ?? '';
+    const t: SpecTableMap = this.table(tableName);
+    const joins: SQL[] = [];
+    const cols: SQL[] = (p.columns ?? []).map(
+      (name: string, i: number) => sql`${this.displayExpr(t, tableName, name, i, joins)} AS ${id(`c${i}`)}`,
+    );
+    const where: SQL[] = [];
+    if (p.filter && p.filter.conditions.length > 0) {
+      const parts: SQL[] = p.filter.conditions.map((c: SpecCondition) => this.condition(t, tableName, c));
+      where.push(sql`(${sql.join(parts, p.filter.conjunction === 'or' ? sql` OR ` : sql` AND `)})`);
+    }
+    if (p.timeField && win) {
+      const f: SpecFieldMap = this.field(t, tableName, p.timeField);
+      where.push(sql`${col('t', f.col)} >= ${win.start.toISOString()}::timestamptz`);
+      where.push(sql`${col('t', f.col)} < ${win.end.toISOString()}::timestamptz`);
+    }
+    const parts: SQL[] = [sql`SELECT ${sql.join(cols, sql`, `)} FROM ${id(t.pg)} AS ${id('t')}`];
+    if (joins.length) parts.push(sql.join(joins, sql` `));
+    if (where.length) parts.push(sql`WHERE ${sql.join(where, sql` AND `)}`);
+    if (p.sort?.field) {
+      const sf: SpecFieldMap = this.field(t, tableName, p.sort.field);
+      parts.push(sql`ORDER BY ${col('t', sf.col)} ${sql.raw(p.sort.order === 'desc' ? 'DESC' : 'ASC')} NULLS LAST`);
+    }
+    parts.push(sql`LIMIT ${Math.min(p.limit ?? 20, 200)}`);
+    return sql.join(parts, sql` `);
+  }
+
   /** 同步状态：表里最近一次被同步写入的时间 + 行数 */
   syncStatusQuery(pgTable: string): SQL {
     return sql`SELECT MAX(${id('_updated_at')}) AS last_at, COUNT(*) AS total FROM ${id(pgTable)}`;

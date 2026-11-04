@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820">
+  <rect x="0" y="0" width="1200" height="820" fill="#ffffff"/>
+  <text x="40" y="48" font-size="26" font-weight="bold" fill="#1f2329">销售作战室（草图）</text>
+  <!-- KPI row -->
+  <rect x="40" y="80" width="260" height="110" rx="8" fill="#ffffff" stroke="#1f2329" stroke-width="2"/>
+  <text x="60" y="112" font-size="16" fill="#646a73">签约额</text>
+  <text x="60" y="160" font-size="34" font-weight="bold" fill="#1f2329">¥1,234 万</text>
+  <rect x="320" y="80" width="260" height="110" rx="8" fill="#ffffff" stroke="#1f2329" stroke-width="2"/>
+  <text x="340" y="112" font-size="16" fill="#646a73">赢单率</text>
+  <text x="340" y="160" font-size="34" font-weight="bold" fill="#1f2329">38%</text>
+  <rect x="600" y="80" width="260" height="110" rx="8" fill="#ffffff" stroke="#1f2329" stroke-width="2"/>
+  <text x="620" y="112" font-size="16" fill="#646a73">在途商机金额</text>
+  <text x="620" y="160" font-size="34" font-weight="bold" fill="#1f2329">¥6,400 万</text>
+  <rect x="880" y="80" width="280" height="110" rx="8" fill="#ffffff" stroke="#1f2329" stroke-width="2"/>
+  <text x="900" y="112" font-size="16" fill="#646a73">回款率</text>
+  <text x="900" y="160" font-size="34" font-weight="bold" fill="#1f2329">53%</text>
+  <!-- trend -->
+  <rect x="40" y="210" width="740" height="280" rx="8" fill="#ffffff" stroke="#1f2329" stroke-width="2"/>
+  <text x="60" y="242" font-size="18" font-weight="bold" fill="#1f2329">每日签约额趋势（折线，按签约日期）</text>
+  <line x1="80" y1="460" x2="750" y2="460" stroke="#8f959e" stroke-width="2"/>
+  <line x1="80" y1="270" x2="80" y2="460" stroke="#8f959e" stroke-width="2"/>
+  <polyline points="80,420 160,380 240,400 320,330 400,350 480,290 560,310 640,280 740,300" fill="none" stroke="#3370ff" stroke-width="3"/>
+  <!-- ranking -->
+  <rect x="800" y="210" width="360" height="280" rx="8" fill="#ffffff" stroke="#1f2329" stroke-width="2"/>
+  <text x="820" y="242" font-size="18" font-weight="bold" fill="#1f2329">销售签约排行 Top10</text>
+  <rect x="820" y="265" width="300" height="22" fill="#3370ff"/>
+  <rect x="820" y="300" width="250" height="22" fill="#3370ff"/>
+  <rect x="820" y="335" width="210" height="22" fill="#3370ff"/>
+  <rect x="820" y="370" width="170" height="22" fill="#3370ff"/>
+  <rect x="820" y="405" width="130" height="22" fill="#3370ff"/>
+  <rect x="820" y="440" width="100" height="22" fill="#3370ff"/>
+  <!-- donut -->
+  <rect x="40" y="510" width="360" height="280" rx="8" fill="#ffffff" stroke="#1f2329" stroke-width="2"/>
+  <text x="60" y="542" font-size="18" font-weight="bold" fill="#1f2329">客户来源占比</text>
+  <circle cx="220" cy="670" r="90" fill="none" stroke="#3370ff" stroke-width="36"/>
+  <!-- funnel -->
+  <rect x="420" y="510" width="360" height="280" rx="8" fill="#ffffff" stroke="#1f2329" stroke-width="2"/>
+  <text x="440" y="542" font-size="18" font-weight="bold" fill="#1f2329">商机阶段漏斗</text>
+  <polygon points="460,570 740,570 710,620 490,620" fill="#3370ff"/>
+  <polygon points="490,630 710,630 680,680 520,680" fill="#5b8cff"/>
+  <polygon points="520,690 680,690 650,740 550,740" fill="#8fb0ff"/>
+  <!-- table -->
+  <rect x="800" y="510" width="360" height="280" rx="8" fill="#ffffff" stroke="#1f2329" stroke-width="2"/>
+  <text x="820" y="542" font-size="18" font-weight="bold" fill="#1f2329">销售跟进明细</text>
+  <line x1="820" y1="580" x2="1140" y2="580" stroke="#8f959e"/>
+  <line x1="820" y1="620" x2="1140" y2="620" stroke="#8f959e"/>
+  <line x1="820" y1="660" x2="1140" y2="660" stroke="#8f959e"/>
+  <line x1="820" y1="700" x2="1140" y2="700" stroke="#8f959e"/>
+  <line x1="820" y1="740" x2="1140" y2="740" stroke="#8f959e"/>
+  <line x1="940" y1="560" x2="940" y2="760" stroke="#8f959e"/>
+  <line x1="1040" y1="560" x2="1040" y2="760" stroke="#8f959e"/>
+  <text x="830" y="572" font-size="13" fill="#646a73">销售</text>
+  <text x="950" y="572" font-size="13" fill="#646a73">跟进次数</text>
+  <text x="1050" y="572" font-size="13" fill="#646a73">超期客户</text>
+</svg>

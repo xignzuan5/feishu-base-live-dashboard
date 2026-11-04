@@ -69,6 +69,8 @@ def lint(spec, path):
             if not p.get("table"):
                 E(bk, pid, "缺少 table")
             measures = p.get("measures") or []
+            if kind == "table" and p.get("columns"):
+                continue  # 记录清单：逐条列字段，不做聚合检查
             dims = p.get("dimensions") or []
             for m in measures:
                 if (m.get("agg") or "").upper() not in ("SUM", "AVERAGE", "MAX", "MIN", "COUNT", "COUNT_DISTINCT"):

@@ -1,0 +1,265 @@
+{
+  "version": 1,
+  "source": {
+    "type": "whiteboard",
+    "whiteboard_token": "<whiteboard_token>",
+    "preview": "whiteboard-preview.jpg"
+  },
+  "title": "销售作战室（草图）",
+  "canvas": {
+    "x": 40.0,
+    "y": 80.0,
+    "w": 1120.0,
+    "h": 710.0
+  },
+  "panels": [
+    {
+      "title": "签约额",
+      "visual": "kpi",
+      "confidence": 0.8,
+      "evidence": [
+        "有大号数字「¥1,234 万」"
+      ],
+      "hints": {
+        "measure": "签约额",
+        "value": "¥1,234 万",
+        "format": "currency"
+      },
+      "notes": [],
+      "id": "w1",
+      "bbox": {
+        "x": 40.0,
+        "y": 80.0,
+        "w": 260.0,
+        "h": 110.0
+      },
+      "layout": {
+        "x": 0,
+        "y": 0,
+        "w": 3,
+        "h": 2
+      }
+    },
+    {
+      "title": "赢单率",
+      "visual": "kpi",
+      "confidence": 0.8,
+      "evidence": [
+        "有大号数字「38%」"
+      ],
+      "hints": {
+        "measure": "赢单率",
+        "value": "38%",
+        "format": "percent"
+      },
+      "notes": [],
+      "id": "w2",
+      "bbox": {
+        "x": 320.0,
+        "y": 80.0,
+        "w": 260.0,
+        "h": 110.0
+      },
+      "layout": {
+        "x": 3,
+        "y": 0,
+        "w": 3,
+        "h": 2
+      }
+    },
+    {
+      "title": "在途商机金额",
+      "visual": "kpi",
+      "confidence": 0.8,
+      "evidence": [
+        "有大号数字「¥6,400 万」"
+      ],
+      "hints": {
+        "measure": "在途商机金额",
+        "value": "¥6,400 万",
+        "format": "currency"
+      },
+      "notes": [],
+      "id": "w3",
+      "bbox": {
+        "x": 600.0,
+        "y": 80.0,
+        "w": 260.0,
+        "h": 110.0
+      },
+      "layout": {
+        "x": 6,
+        "y": 0,
+        "w": 3,
+        "h": 2
+      }
+    },
+    {
+      "title": "回款率",
+      "visual": "kpi",
+      "confidence": 0.8,
+      "evidence": [
+        "有大号数字「53%」"
+      ],
+      "hints": {
+        "measure": "回款率",
+        "value": "53%",
+        "format": "percent"
+      },
+      "notes": [],
+      "id": "w4",
+      "bbox": {
+        "x": 880.0,
+        "y": 80.0,
+        "w": 280.0,
+        "h": 110.0
+      },
+      "layout": {
+        "x": 9,
+        "y": 0,
+        "w": 3,
+        "h": 2
+      }
+    },
+    {
+      "title": "每日签约额趋势",
+      "visual": "line",
+      "confidence": 0.92,
+      "evidence": [
+        "标题含「每日」",
+        "有折线和坐标轴"
+      ],
+      "hints": {
+        "time_field": "签约日期",
+        "measure": "签约额"
+      },
+      "notes": [
+        "原标题：每日签约额趋势（折线，按签约日期）"
+      ],
+      "id": "w5",
+      "bbox": {
+        "x": 40.0,
+        "y": 210.0,
+        "w": 740.0,
+        "h": 280.0
+      },
+      "layout": {
+        "x": 0,
+        "y": 2,
+        "w": 8,
+        "h": 4
+      }
+    },
+    {
+      "title": "销售签约排行 Top10",
+      "visual": "bar",
+      "confidence": 0.92,
+      "evidence": [
+        "标题含「排行」",
+        "有 6 根左对齐、长短不一的横条"
+      ],
+      "hints": {
+        "dimension": "销售签约"
+      },
+      "notes": [],
+      "id": "w6",
+      "bbox": {
+        "x": 800.0,
+        "y": 210.0,
+        "w": 360.0,
+        "h": 280.0
+      },
+      "layout": {
+        "x": 8,
+        "y": 2,
+        "w": 4,
+        "h": 4
+      }
+    },
+    {
+      "title": "客户来源占比",
+      "visual": "donut",
+      "confidence": 0.92,
+      "evidence": [
+        "标题含「占比」",
+        "有圆 / 圆环"
+      ],
+      "hints": {
+        "dimension": "客户来源"
+      },
+      "notes": [],
+      "id": "w7",
+      "bbox": {
+        "x": 40.0,
+        "y": 510.0,
+        "w": 360.0,
+        "h": 280.0
+      },
+      "layout": {
+        "x": 0,
+        "y": 6,
+        "w": 4,
+        "h": 4
+      }
+    },
+    {
+      "title": "商机阶段",
+      "visual": "funnel",
+      "confidence": 0.92,
+      "evidence": [
+        "标题含「漏斗」",
+        "有 3 层上宽下窄的梯形"
+      ],
+      "hints": {
+        "measure": "商机阶段"
+      },
+      "notes": [
+        "原标题：商机阶段漏斗"
+      ],
+      "id": "w8",
+      "bbox": {
+        "x": 420.0,
+        "y": 510.0,
+        "w": 360.0,
+        "h": 280.0
+      },
+      "layout": {
+        "x": 4,
+        "y": 6,
+        "w": 4,
+        "h": 4
+      }
+    },
+    {
+      "title": "销售跟进明细",
+      "visual": "table",
+      "confidence": 0.92,
+      "evidence": [
+        "标题含「明细」",
+        "有 6×3 的表格网格"
+      ],
+      "hints": {
+        "measure": "销售跟进明细",
+        "columns": [
+          "销售",
+          "跟进次数",
+          "超期客户"
+        ]
+      },
+      "notes": [],
+      "id": "w9",
+      "bbox": {
+        "x": 800.0,
+        "y": 510.0,
+        "w": 360.0,
+        "h": 280.0
+      },
+      "layout": {
+        "x": 8,
+        "y": 6,
+        "w": 4,
+        "h": 4
+      }
+    }
+  ]
+}

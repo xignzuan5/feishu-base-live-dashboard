@@ -135,11 +135,22 @@ export const arrange = (panels: SpecPanelMeta[], layout: LayoutKey): Placement[]
   const kpiSpan: number = kpis.length > 0 ? Math.max(2, Math.floor(12 / Math.min(kpis.length, 6))) : 12;
 
   if (layout === 'original') {
-    return ordered.map((p: SpecPanelMeta) => ({
+    const placed: Placement[] = ordered.map((p: SpecPanelMeta) => ({
       panel: p,
       span: Math.min(12, Math.max(2, p.layout?.w ?? 6)),
       height: Math.max(170, (p.layout?.h ?? 3) * 104 - 84),
     }));
+    // 按行（相同 y）补满 12 栏：草图换算的宽度加起来常差 1 栏，把差额给本行最后一个面板
+    const rows = new Map<number, Placement[]>();
+    placed.forEach((pl: Placement) => {
+      const y: number = pl.panel.layout?.y ?? 0;
+      rows.set(y, [...(rows.get(y) ?? []), pl]);
+    });
+    rows.forEach((row: Placement[]) => {
+      const used: number = row.reduce((a: number, pl: Placement) => a + pl.span, 0);
+      if (used < 12 && used >= 9) row[row.length - 1].span += 12 - used;
+    });
+    return placed;
   }
   const kpiRow: Placement[] = kpis.map((p: SpecPanelMeta) => ({ panel: p, span: kpiSpan, height: 0 }));
   if (layout === 'executive') {

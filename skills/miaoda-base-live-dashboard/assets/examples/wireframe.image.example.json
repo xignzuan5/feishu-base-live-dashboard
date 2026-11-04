@@ -1,0 +1,174 @@
+{
+  "version": 1,
+  "source": {
+    "type": "image",
+    "image": "photo-sketch.jpg",
+    "recognized_by": "agent-vision"
+  },
+  "title": "项目周会看板",
+  "canvas": {
+    "x": 0,
+    "y": 0,
+    "w": 1400,
+    "h": 900
+  },
+  "panels": [
+    {
+      "id": "i1",
+      "title": "本周完成任务",
+      "visual": "kpi",
+      "confidence": 0.95,
+      "evidence": [
+        "大号数字「128」"
+      ],
+      "bbox": {
+        "x": 50,
+        "y": 100,
+        "w": 410,
+        "h": 130
+      },
+      "hints": {
+        "measure": "完成任务",
+        "value": "128",
+        "format": "number"
+      }
+    },
+    {
+      "id": "i2",
+      "title": "逾期任务",
+      "visual": "kpi",
+      "confidence": 0.95,
+      "evidence": [
+        "大号数字「23」"
+      ],
+      "bbox": {
+        "x": 490,
+        "y": 100,
+        "w": 410,
+        "h": 130
+      },
+      "hints": {
+        "measure": "逾期任务",
+        "value": "23",
+        "format": "number"
+      }
+    },
+    {
+      "id": "i3",
+      "title": "按期完成率",
+      "visual": "kpi",
+      "confidence": 0.95,
+      "evidence": [
+        "大号数字「86%」"
+      ],
+      "bbox": {
+        "x": 930,
+        "y": 100,
+        "w": 410,
+        "h": 130
+      },
+      "hints": {
+        "measure": "按期完成率",
+        "value": "86%",
+        "format": "percent"
+      }
+    },
+    {
+      "id": "i4",
+      "title": "每周新建 vs 完成任务",
+      "visual": "line",
+      "confidence": 0.9,
+      "evidence": [
+        "两条折线（蓝、橙）+ 坐标轴",
+        "标题含「每周」「vs」"
+      ],
+      "bbox": {
+        "x": 50,
+        "y": 260,
+        "w": 820,
+        "h": 300
+      },
+      "hints": {
+        "measure": "任务",
+        "series": [
+          "新建",
+          "完成"
+        ]
+      },
+      "notes": [
+        "原标题：每周新建 vs 完成任务（折线）"
+      ]
+    },
+    {
+      "id": "i5",
+      "title": "各部门任务数",
+      "visual": "column",
+      "confidence": 0.9,
+      "evidence": [
+        "5 根底对齐的柱子",
+        "横轴标签：研发、产品、设计、测试、运营"
+      ],
+      "bbox": {
+        "x": 900,
+        "y": 260,
+        "w": 450,
+        "h": 300
+      },
+      "hints": {
+        "dimension": "部门",
+        "measure": "任务数",
+        "categories": [
+          "研发",
+          "产品",
+          "设计",
+          "测试",
+          "运营"
+        ]
+      }
+    },
+    {
+      "id": "i6",
+      "title": "负责人在手任务 Top8",
+      "visual": "bar",
+      "confidence": 0.92,
+      "evidence": [
+        "8 根左对齐的横条",
+        "标题含「Top8」"
+      ],
+      "bbox": {
+        "x": 50,
+        "y": 590,
+        "w": 560,
+        "h": 280
+      },
+      "hints": {
+        "dimension": "负责人",
+        "measure": "在手任务"
+      }
+    },
+    {
+      "id": "i7",
+      "title": "逾期任务清单",
+      "visual": "table",
+      "confidence": 0.93,
+      "evidence": [
+        "4 列表头 + 5 行网格",
+        "标题含「清单」"
+      ],
+      "bbox": {
+        "x": 640,
+        "y": 590,
+        "w": 710,
+        "h": 280
+      },
+      "hints": {
+        "columns": [
+          "任务",
+          "负责人",
+          "计划截止",
+          "逾期天数"
+        ]
+      }
+    }
+  ]
+}

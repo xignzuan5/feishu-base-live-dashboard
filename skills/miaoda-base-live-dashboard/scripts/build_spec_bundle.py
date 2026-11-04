@@ -110,7 +110,8 @@ def camel_panel(p, ns):
     if p.get("table"):
         out["table"] = "%s:%s" % (ns, p["table"])
     for k_src, k_dst in (("subtitle", "subtitle"), ("limit", "limit"), ("layout", "layout"), ("text", "text"),
-                         ("sort", "sort"), ("filter", "filter"), ("compute", "compute"), ("good_when", "goodWhen")):
+                         ("sort", "sort"), ("filter", "filter"), ("compute", "compute"), ("good_when", "goodWhen"),
+                         ("columns", "columns")):
         if p.get(k_src) is not None:
             out[k_dst] = p[k_src]
     if p.get("default_chart") or default_chart:
@@ -133,6 +134,9 @@ def validate(boards, tables):
                 continue
             used = [m["field"] for m in p["measures"] if m.get("field")] + [d["field"] for d in p["dimensions"]]
             used += [c["field"] for m in p["measures"] for c in m.get("where", [])]
+            used += list(p.get("columns") or [])
+            if (p.get("sort") or {}).get("field"):
+                used.append(p["sort"]["field"])
             used += [c["field"] for c in (p.get("filter") or {}).get("conditions", [])]
             if p.get("timeField"):
                 used.append(p["timeField"])
@@ -160,14 +164,20 @@ def main():
     args = ap.parse_args()
     bundle = {"title": args.title or "", "timezone": "Asia/Shanghai", "entities": [], "boards": [], "tables": {}}
     all_warn = []
+    ns_by_base = {}
     for i, pair in enumerate(args.pair):
         spec_path, plan_path = pair.split(":", 1)
         spec = json.load(open(spec_path, encoding="utf-8"))
         plan = json.load(open(plan_path, encoding="utf-8"))
-        ns = "b%d" % (i + 1)
-        tables, warns = build_tables(spec, plan, os.path.dirname(os.path.abspath(plan_path)), ns)
-        all_warn += warns
-        bundle["tables"].update(tables)
+        # 同一个多维表格的多份 spec 共用一组表映射
+        base_key = plan.get("base_url") or plan_path
+        if base_key in ns_by_base:
+            ns = ns_by_base[base_key]
+        else:
+            ns = ns_by_base[base_key] = "b%d" % (len(ns_by_base) + 1)
+            tables, warns = build_tables(spec, plan, os.path.dirname(os.path.abspath(plan_path)), ns)
+            all_warn += warns
+            bundle["tables"].update(tables)
         bundle["timezone"] = spec.get("timezone", bundle["timezone"])
         bundle["title"] = bundle["title"] or spec.get("title", "")
         # 实体固定配色组：spec 显式给的 entities + 所有维度的固定顺序 order

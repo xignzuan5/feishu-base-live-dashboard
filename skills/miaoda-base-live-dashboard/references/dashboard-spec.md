@@ -81,7 +81,8 @@
 | `trend` | 第 1 个是日期；可加第 2 个拆系列 | 1~N | 趋势面板 | `line` `area` `bar` |
 | `category` | 1 | 1 | 构成 / 排行面板 | `bar` `column` `treemap` `donut` `segmented` |
 | `stacked` | 2（分类 × 系列），或 1 维 + 多指标 | 1~N | 多系列面板 | `stacked` `grouped` `percent` |
-| `table` | 0~2 | 1~N | 明细表（可排序） | — |
+| `table` | 0~2 | 1~N | 汇总表（可排序） | — |
+| `table` + `columns` | — | — | **记录清单**：逐条列出 `columns` 里的字段，配合 `filter` / `sort: {"by": "field", "field": "计划截止"}` / `limit`（默认 20） | — |
 | `text` | — | — | Markdown 说明 | — |
 
 ### 指标 measures

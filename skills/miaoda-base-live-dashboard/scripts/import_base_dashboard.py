@@ -73,6 +73,9 @@ def table_schema(base_token, table_name, cache):
         info = {"type": f.get("type")}
         if f.get("type") == "select":
             info["multiple"] = bool(f.get("multiple"))
+            opts = [o.get("name") for o in (f.get("options") or []) if o.get("name")]
+            if opts:
+                info["options"] = opts
         if f.get("type") == "link":
             info["link_table_id"] = f.get("link_table")
         style = f.get("style") or {}
