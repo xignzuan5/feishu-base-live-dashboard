@@ -31,7 +31,7 @@ description: 引导用户把网站上的公开数据抓下来、整理成表格�
 python3 $SKILL/scripts/scrape_page.py --url "<网址>"
 ```
 
-第一行就是合规检查结果。**robots.txt 不允许就停下**，告诉用户可以改用官方 API、数据下载页，或联系网站授权；只有用户确认网站是自己的或已获授权，才可以加 `--ignore-robots`。完整规则见 [references/compliance.md](references/compliance.md)。
+第一行就是合规检查结果。电商、外卖、社交、招聘等平台的前台页面会被直接拦下（即使 robots.txt 放行），引导用户改用平台的开放接口或后台导出。**robots.txt 不允许就停下**，告诉用户可以改用官方 API、数据下载页，或联系网站授权；只有用户确认网站是自己的或已获授权，才可以加 `--ignore-robots`。完整规则见 [references/compliance.md](references/compliance.md)。
 
 ### ③ 识别数据块
 

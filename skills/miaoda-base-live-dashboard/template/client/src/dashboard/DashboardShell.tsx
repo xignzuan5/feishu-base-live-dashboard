@@ -45,7 +45,7 @@ export const DashboardShell: React.FC = () => {
             </span>
             <div className="min-w-0">
               <h1 className="dash-panel-title truncate text-base">{meta?.title ?? '经营实时看板'}</h1>
-              <p className="dash-subtle truncate text-xs">数据来自飞书多维表格，改动几秒内同步</p>
+              <p className="dash-subtle truncate text-xs">数据来自飞书多维表格，改动约 10 秒内同步</p>
             </div>
           </div>
 

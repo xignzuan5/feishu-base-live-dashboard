@@ -56,7 +56,7 @@ interface LiveFeedPanelProps {
 }
 
 export const LiveFeedPanel: React.FC<LiveFeedPanelProps> = ({
-  title = '实时订单流', subtitle = '多维表格新增 / 修改订单，几秒内出现在这里', items, height = 420, className, dense,
+  title = '实时订单流', subtitle = '多维表格新增 / 修改订单，约 10 秒内出现在这里', items, height = 420, className, dense,
 }) => {
   const ids: string[] = useMemo(() => (items ?? []).map((i: FeedItem) => i.id), [items]);
   const fresh: Set<string> = useNewIds(ids);

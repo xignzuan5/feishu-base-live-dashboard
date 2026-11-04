@@ -28,6 +28,11 @@ import urllib.request
 import urllib.robotparser
 from html.parser import HTMLParser
 
+# 电商、外卖、社交、招聘等平台：即使 robots.txt 放行首页，条款通常也禁止采集，默认不抓
+PLATFORMS = ("taobao.com", "tmall.com", "jd.com", "pinduoduo.com", "yangkeduo.com", "meituan.com", "dianping.com",
+             "ele.me", "douyin.com", "xiaohongshu.com", "weibo.com", "zhihu.com", "bilibili.com", "kuaishou.com",
+             "zhipin.com", "liepin.com", "51job.com", "linkedin.com", "facebook.com", "instagram.com", "x.com",
+             "twitter.com", "amazon.com", "tiktok.com")
 UA = "web-to-base-skill/0.1 (+https://github.com/xignzuan5/feishu-base-live-dashboard)"
 CACHE_DIR = ".web-cache"
 MIN_INTERVAL = 2.0
@@ -79,7 +84,7 @@ def fetch(url, refresh=False):
 
 def clean_text(s):
     s = html.unescape(s)
-    s = re.sub(r"\[\s*(\d+|[a-z]|注\s*\d*|note \d+|citation needed)\s*\]", "", s)  # 维基脚注 [1] [a]
+    s = re.sub(r"\[\s*(\d+|[a-z]{1,3}|注\s*\d*|note \d+|citation needed)\s*\]", "", s)  # 维基脚注 [1] [a] [aa]
     return re.sub(r"\s+", " ", s).strip()
 
 
@@ -93,12 +98,16 @@ class PageParser(HTMLParser):
         self._in_script, self._script_type, self._script_buf = False, "", []
         self._skip = 0
         self._li_stack, self.text_len = [], 0
+        self._sup_skip = 0
         self._caption = None
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if tag in ("style", "noscript"):
             self._skip += 1
+        if tag == "sup" and "reference" in (a.get("class") or ""):
+            self._skip += 1  # 脚注上标 [1] [aa]
+            self._sup_skip += 1
         if tag == "script":
             self._in_script, self._script_type, self._script_buf = True, (a.get("type") or ""), []
         if tag == "table":
@@ -116,7 +125,6 @@ class PageParser(HTMLParser):
                 self._cell.setdefault("href", a.get("href"))
             elif tag == "br" and self._cell is not None:
                 self._cell["text"].append(" ")
-            t["cls"] = t["cls"]
         if tag == "li":
             self._li_stack.append({"text": [], "href": None, "depth": len(self._li_stack)})
         elif tag == "a" and self._li_stack and a.get("href") and not self._li_stack[-1]["href"]:
@@ -124,6 +132,9 @@ class PageParser(HTMLParser):
 
     def handle_endtag(self, tag):
         if tag in ("style", "noscript") and self._skip:
+            self._skip -= 1
+        if tag == "sup" and self._sup_skip:
+            self._sup_skip -= 1
             self._skip -= 1
         if tag == "script" and self._in_script:
             if "ld+json" in self._script_type:
@@ -246,8 +257,9 @@ def analyze(body):
     blocks = []
     for t in p.tables:
         b = table_block(t)
-        if b and any("查论编" in c or "查看讨论编辑" in c for c in b["columns"]):
-            continue  # 维基百科导航框
+        if b and (re.search(r"\b(navbox|vertical-navbox|sidebar|metadata|ambox|infobox)\b", t.get("cls") or "")
+                  or any("查论编" in c or "查看讨论编辑" in c or c.startswith("vte") for c in b["columns"])):
+            continue  # 导航框、信息框、提示框：不是数据
         if b:
             blocks.append(b)
     blocks.sort(key=lambda b: -len(b["rows"]))
@@ -279,6 +291,11 @@ def main():
     print("合规检查：%s" % why)
     if not ok and not args.ignore_robots:
         sys.exit("🔴 该网站的 robots.txt 不允许抓取这个页面，已停止。请改用官方 API / 数据下载，或联系网站获取授权。")
+    host = urllib.parse.urlsplit(args.url).netloc.lower()
+    platform = next((d for d in PLATFORMS if host == d or host.endswith("." + d)), None)
+    if platform and not args.ignore_robots:
+        sys.exit("🔴 %s 是第三方平台的前台页面：服务条款通常禁止自动采集，已停止。请改用它的官方开放平台 / 商家后台导出；"
+                 "确认已获书面授权时再加 --ignore-robots。" % platform)
     body, cached = fetch(args.url, args.refresh)
     blocks, script_heavy = analyze(body)
     if script_heavy or not blocks:

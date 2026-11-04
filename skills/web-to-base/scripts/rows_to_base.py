@@ -23,6 +23,30 @@ import larkcli  # noqa: E402
 
 NUM = re.compile(r"^[+\-−]?[¥$€]?\s*[\d,]+(\.\d+)?\s*(%|万|亿|千)?$")
 DATE = re.compile(r"^(\d{4})[-/年.](\d{1,2})[-/月.](\d{1,2})日?$")
+MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
+DATE_DMY = re.compile(r"^(\d{1,2})\s+([A-Za-z]{3,9})\.?,?\s+(\d{4})$")   # 13 Jun 2025
+DATE_MDY = re.compile(r"^([A-Za-z]{3,9})\.?\s+(\d{1,2}),?\s+(\d{4})$")   # Jun 13, 2025 / June 13 2025
+
+
+def parse_date(v):
+    """返回 (年, 月, 日) 或 None。支持 2025-06-13、2025年6月13日、13 Jun 2025、June 13, 2025；
+    不猜 06/07/2025 这类日月顺序有歧义的写法。"""
+    v = v.strip()
+    m = DATE.match(v)
+    if m:
+        y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+    else:
+        m1, m2 = DATE_DMY.match(v), DATE_MDY.match(v)
+        if m1:
+            d, mon, y = int(m1.group(1)), m1.group(2), int(m1.group(3))
+        elif m2:
+            mon, d, y = m2.group(1), int(m2.group(2)), int(m2.group(3))
+        else:
+            return None
+        mo = MONTHS.get(mon[:3].lower())
+        if not mo:
+            return None
+    return (y, mo, d) if 1 <= mo <= 12 and 1 <= d <= 31 else None
 URL = re.compile(r"^https?://")
 
 
@@ -49,7 +73,7 @@ def infer(columns, rows, key):
             kind = "text"
         elif filled and sum(1 for v in filled if NUM.match(v.replace(" ", ""))) / n >= 0.9:
             kind = "number"
-        elif filled and sum(1 for v in filled if DATE.match(v)) / n >= 0.9:
+        elif filled and sum(1 for v in filled if parse_date(v)) / n >= 0.9:
             kind = "datetime"
         elif filled and sum(1 for v in filled if URL.match(v)) / n >= 0.9:
             kind = "url"
@@ -87,8 +111,8 @@ def cell(f, v):
     if f["kind"] == "number":
         return to_number(v)
     if f["kind"] == "datetime":
-        m = DATE.match(v)
-        return "%s-%02d-%02d 00:00" % (m.group(1), int(m.group(2)), int(m.group(3))) if m else None
+        ymd = parse_date(v)
+        return "%d-%02d-%02d 00:00" % ymd if ymd else None
     if f["kind"] == "select":
         return [v]
     return v
@@ -126,7 +150,10 @@ def main():
     key = args.key or columns[0]
     if key not in columns:
         sys.exit("主键列「%s」不在列里：%s" % (key, "、".join(columns)))
-    cols = [key] + [c for c in columns if c != key]
+    empty = [c for c in columns if c != key and not any(str(r.get(c, "")).strip() for r in rows)]
+    if empty:
+        print("跳过全空的列：%s" % "、".join(empty))
+    cols = [key] + [c for c in columns if c != key and c not in empty]
     fields = infer(cols, rows, key)
     print("| 列 | 推断类型 | 示例 |\n|---|---|---|")
     for f in fields:

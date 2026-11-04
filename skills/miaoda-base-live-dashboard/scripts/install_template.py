@@ -113,6 +113,18 @@ def patch_app_tsx(repo, force):
         print("  ! app.tsx 已有业务路由，未覆盖；参考 client/src/app.dashboard.example.tsx 手动合并")
 
 
+def read_config(repo):
+    """升级模板前先记下应用已有的标题和数据源，避免 --force 覆盖成模板默认值。"""
+    p = os.path.join(repo, "server/modules/dashboard/dashboard.config.ts")
+    if not os.path.exists(p):
+        return None, None
+    s = open(p, encoding="utf-8").read()
+    t = re.search(r"title: '(.*?)',", s)
+    b = re.search(r"baseUrl: '(.*?)',", s)
+    base = b.group(1) if b and "<base_token>" not in b.group(1) else None
+    return (t.group(1) if t else None), base
+
+
 def patch_config(repo, title, base_url):
     p = os.path.join(repo, "server/modules/dashboard/dashboard.config.ts")
     s = open(p, encoding="utf-8").read()
@@ -134,6 +146,7 @@ def main():
     if not os.path.exists(os.path.join(repo, ".spark/meta.json")):
         sys.exit("不是妙搭应用仓库（缺 .spark/meta.json）：%s" % repo)
     print("安装看板模板 → %s" % repo)
+    prev_title, prev_base = read_config(repo)
     for item in COPY_ITEMS:
         copy_item(item, repo, args.force)
     patch_app_tsx(repo, args.force)
@@ -146,9 +159,11 @@ def main():
         print("  ✓ client/src/api/index.ts 导出 dashboardApi")
     if append_once(os.path.join(repo, "client/src/api/index.ts"), "export * as specBoardApi from './spec-board';"):
         print("  ✓ client/src/api/index.ts 导出 specBoardApi")
-    if args.title or args.base_url:
-        patch_config(repo, args.title, args.base_url)
-        print("  ✓ dashboard.config.ts 标题 / 数据源已更新")
+    title, base_url = args.title or prev_title, args.base_url or prev_base
+    if title or base_url:
+        patch_config(repo, title, base_url)
+        kept = [n for n, a, v in (("标题", args.title, prev_title), ("数据源", args.base_url, prev_base)) if not a and v]
+        print("  ✓ dashboard.config.ts 标题 / 数据源已写入" + ("（沿用应用原有的%s）" % "、".join(kept) if kept else ""))
     print("完成。下一步：npm run gen:db-schema → npm run type:check → npm run dev")
 
 
