@@ -68,7 +68,8 @@ export type SpecPanelData =
   | { kind: 'stacked'; stacked: StackedData }
   | { kind: 'table'; table: TableData }
   | { kind: 'text'; text: string }
-  | { kind: 'error'; message: string };
+  /** message 是给用户看的友好文案；ref 用于对照服务端日志；detail 仅开发环境返回，前端只打到控制台 */
+  | { kind: 'error'; message: string; ref: string; detail?: string };
 
 export interface SpecBoardData {
   key: string;

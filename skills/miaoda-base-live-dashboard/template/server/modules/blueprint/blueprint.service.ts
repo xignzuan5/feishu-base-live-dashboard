@@ -11,6 +11,7 @@ import type {
 } from '@shared/spec-board.interface';
 
 import { buildWindow, nowInTz, toIso, type TimeWindow } from '../dashboard/dashboard.time';
+import { exposeDetail, newErrorRef } from '../dashboard/safe-error';
 import { SpecQueryBuilder, SpecQueryError, type QueryWindow } from './blueprint.query';
 import { SPEC_BUNDLE } from './spec.generated';
 import type { SpecBoardDef, SpecPanelDef, SpecTableMap } from './spec.types';
@@ -263,9 +264,15 @@ export class SpecBoardService {
         try {
           return [p.id, await this.panel(p, w)];
         } catch (e: unknown) {
-          const message: string = e instanceof SpecQueryError ? e.message : '查询失败，请查看服务端日志';
-          this.logger.error(`面板 ${board.key}/${p.id} 查询失败`, e instanceof Error ? e.stack : String(e));
-          return [p.id, { kind: 'error', message }];
+          const ref: string = newErrorRef();
+          this.logger.error(`[${ref}] 面板 ${board.key}/${p.id} 查询失败`, e instanceof Error ? e.stack : String(e));
+          // 配置问题（SpecQueryError）的说明对开发有用，但不展示给最终用户：只在非生产环境随响应带给控制台
+          const detail: string | undefined = exposeDetail()
+            ? e instanceof SpecQueryError
+              ? e.message
+              : (e instanceof Error ? e.message : String(e)).slice(0, 300)
+            : undefined;
+          return [p.id, { kind: 'error', message: '该面板暂时无法显示', ref, detail }];
         }
       }),
     );

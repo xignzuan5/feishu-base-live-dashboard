@@ -10,9 +10,10 @@
 
 ```
 飞书会议纪要 ─┐
-原生仪表盘 ────┼─► dashboard-spec.json ─► 看板引擎（不用写查询）─┐
+原生仪表盘 ────┤
+飞书画板 / 图片 ┼─► dashboard-spec.json ─► 看板引擎（不用写查询）─┐
 行业模板 ─────┘                                                ├─► 妙搭看板：8 风格 × 8 排版
-飞书多维表格 ──流式同步（秒级）──► 应用数据库 Postgres ──5 秒轮询──┘
+网站公开数据 ─web-to-base─► 飞书多维表格 ──流式同步（秒级）──► 应用数据库 Postgres ──5 秒轮询──┘
 ```
 
 - **原生仪表盘一键迁移，数字逐项核对**：读取多维表格仪表盘的每个组件，生成新看板，再逐面板对比原值。演示中 8 个面板全部一致：
@@ -48,6 +49,30 @@
 
 ![手绘照片 vs 生成的看板](docs/images/compare-photo.jpg)
 
+## 还没有数据？先从网站抓进多维表格
+
+仓库里的第二个 skill `web-to-base` 引导你把网页上的**公开**表格 / 列表抓下来，存进多维表格，再接到实时看板：
+
+```
+网址 ─► 合规检查（robots.txt、≥2 秒间隔、可识别的 User-Agent）
+     ─► 识别页面里的数据块（表格 / schema.org 结构化数据 / 重复列表）并预览
+     ─► 推断字段类型（数字去千分位与单位、日期、链接、单选）
+     ─► 写入多维表格：按主键新增或更新，自动补「来源链接」「抓取时间」
+     ─► （可选）定期重跑 ─► （可选）交给看板 skill
+```
+
+以维基百科「省级行政区地区生产总值列表」为例：
+
+```
+合规检查：robots.txt 允许
+| 数据块 | 类型 | 标题 | 行数 | 列 |
+| t1     | 表格 | …    | 33   | 地区、GDP (百万人民币)、GDP (百万美元)、占比 (%)、实际增幅 (%)、名义增幅 (%) |
+✓ 新增 33 条、更新 0 条          # 第一次
+✓ 新增 0 条、更新 33 条          # 再跑一次
+```
+
+重复运行只会更新已有记录、补充新记录，不会删数据。需要登录、付费墙后面的内容、个人信息、robots.txt 不允许的页面，skill 会停下并建议改用官方 API 或数据下载页，详见 [合规说明](skills/web-to-base/references/compliance.md)。
+
 ## 截图
 
 | 投屏大屏（霓虹） | 客户管理·销售业绩（松针） |
@@ -68,11 +93,21 @@
 **安装 skill**
 
 ```bash
-# 方式一：skills CLI
+# 方式一：skills CLI（会列出仓库里的两个 skill 供选择）
 npx skills add xignzuan5/feishu-base-live-dashboard
 # 方式二：手动复制
 git clone https://github.com/xignzuan5/feishu-base-live-dashboard.git
 cp -R feishu-base-live-dashboard/skills/miaoda-base-live-dashboard ~/.claude/skills/
+cp -R feishu-base-live-dashboard/skills/web-to-base ~/.claude/skills/   # 可选：网站数据抓取
+```
+
+**让它主动出现**
+
+两个 skill 的描述已经写成「遇到搭看板 / 仪表盘 / 大屏 / BI 报表需求就主动使用」，激活后会先走一段引导：用选择框问清数据在哪、给谁看、要不要发布，再用任务列表一步步展示进度。如果你希望团队里的 Claude 更稳定地用它，可以在项目或个人的 `CLAUDE.md` 里加一句：
+
+```markdown
+遇到搭建数据看板、仪表盘、驾驶舱、大屏、BI 报表的需求时，优先使用 miaoda-base-live-dashboard skill；
+数据还在网站上时，先用 web-to-base skill 抓进飞书多维表格。
 ```
 
 **然后直接说**
@@ -83,6 +118,7 @@ cp -R feishu-base-live-dashboard/skills/miaoda-base-live-dashboard ~/.claude/ski
 - 「照着这块画板里画的样子做个看板：<画板 / 文档链接>」
 - 「这是我们在别的 BI 里的看板截图，用多维表格的数据在妙搭上做一个一样的」
 - 「做一个工作管理的演示看板，风格大气一点」
+- 「把这个网页上的表格抓进多维表格，每周更新一次，再做成看板：<网址>」
 
 完整流程见 [SKILL.md](skills/miaoda-base-live-dashboard/SKILL.md)；大家会怎么用见 [用户故事](docs/user-stories.md)。
 
@@ -97,12 +133,15 @@ cp -R feishu-base-live-dashboard/skills/miaoda-base-live-dashboard ~/.claude/ski
 | 面板 | 指标卡、趋势、构成 / 排行、堆叠、热力、散点、进度、实时订单流、汇总表、记录清单；每个面板可切换 3~5 种图表 |
 | 质量 | 迁移口径核对（`verify_spec_board.py`）、设计检查（`lint_spec.py`）、截图自检、配色校验 |
 | 运维 | 逐表建同步、线上断点续传（`--heal`）、3 秒短缓存保护数据库连接 |
+| 安全 | 界面只显示友好提示，SQL、表名、堆栈只进服务端日志；浏览器控制台留排查编号，同一错误只记一次 |
+| 数据来源 | `web-to-base`：网页公开表格 / 列表 → 多维表格，遵守 robots.txt 与请求间隔，按主键增量更新 |
 
 ## 仓库结构
 
 ```
+skills/web-to-base/       # 网站公开数据 → 多维表格（抓取、识别、类型推断、按主键更新）
 skills/miaoda-base-live-dashboard/
-├── SKILL.md              # Agent 执行流程（入口）
+├── SKILL.md              # Agent 执行流程（入口，含激活后的引导）
 ├── README.md             # 上架 skill 市场用的简介与 3 分钟演示脚本
 ├── scripts/              # 造数、同步、迁移、核对、设计检查、编译、安装
 │   └── domains/          # 行业领域包（工作管理、客户管理）
@@ -133,4 +172,4 @@ docs/                     # 用户故事、同类项目、截图
 
 ---
 
-**English summary** — An Agent Skill that turns a Feishu (Lark) Base into a live dashboard app on Feishu Miaoda: Base tables are stream-synced into Postgres, the board polls every 5 s, and requirements can come from meeting transcripts, an existing Base dashboard (migrated with per-panel number verification), or vertical templates (retail, work management, CRM). Includes 8 validated visual styles, 8 layout archetypes, a spec-driven query engine, a design linter and seed-data generators. Unofficial community project.
+**English summary** — An Agent Skill that turns a Feishu (Lark) Base into a live dashboard app on Feishu Miaoda: Base tables are stream-synced into Postgres, the board polls every 5 s, and requirements can come from meeting transcripts, an existing Base dashboard (migrated with per-panel number verification), or vertical templates (retail, work management, CRM). Requirements can also come from a Feishu whiteboard sketch or a screenshot. A companion skill, `web-to-base`, scrapes public web tables into a Base (robots.txt-aware, rate-limited, upsert by key). Includes 8 validated visual styles, 8 layout archetypes, a spec-driven query engine, a design linter and seed-data generators. Unofficial community project.

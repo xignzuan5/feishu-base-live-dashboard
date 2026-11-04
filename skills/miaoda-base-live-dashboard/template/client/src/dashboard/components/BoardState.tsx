@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CircleAlert } from 'lucide-react';
+import { logger } from '@lark-apaas/client-toolkit/logger';
 
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -10,13 +11,37 @@ interface BoardStateProps {
   children: React.ReactNode;
 }
 
-const errorText = (error: unknown): string => {
-  const e = error as { response?: { data?: { error?: { message?: string } } } } | null;
-  return e?.response?.data?.error?.message ?? '看板数据加载失败，请稍后重试';
+interface ApiErrorShape {
+  message?: string;
+  response?: { status?: number; data?: { error?: { code?: string; message?: string; ref?: string; details?: string } } };
+}
+
+/** 界面只用固定的友好文案；接口返回的错误详情（状态码、排查编号）只打到浏览器控制台 */
+const FRIENDLY_TEXT = '看板数据暂时加载失败，稍后会自动重试';
+
+const logError = (error: unknown): void => {
+  const e = error as ApiErrorShape | null;
+  const body = e?.response?.data?.error;
+  let ref: string | undefined = body?.ref;
+  if (!ref && body?.details) {
+    try {
+      ref = (JSON.parse(body.details) as { ref?: string }).ref;
+    } catch {
+      ref = undefined;
+    }
+  }
+  logger.error('[看板] 数据加载失败', { status: e?.response?.status, code: body?.code, ref, message: e?.message });
 };
 
 /** 首次加载显示骨架；轮询失败但已有旧数据时继续展示旧数据，只在顶部提示 */
 export const BoardState: React.FC<BoardStateProps> = ({ isLoading, error, hasData, children }) => {
+  // 轮询失败时 error 对象每次都是新的：按「状态码 + 错误码」去重，同一类失败只记一次
+  const e = error as ApiErrorShape | null;
+  const errKey: string | undefined = error ? `${e?.response?.status ?? ''}|${e?.response?.data?.error?.code ?? e?.message ?? ''}` : undefined;
+  useEffect(() => {
+    if (error) logError(error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errKey]);
   if (isLoading && !hasData) {
     return (
       <div className="flex flex-col gap-3" aria-busy="true" aria-label="加载中">
@@ -36,7 +61,7 @@ export const BoardState: React.FC<BoardStateProps> = ({ isLoading, error, hasDat
     return (
       <div className="dash-panel dash-critical flex items-center gap-2 p-6 text-sm" role="alert">
         <CircleAlert className="size-4" aria-hidden />
-        {errorText(error)}
+        {FRIENDLY_TEXT}
       </div>
     );
   }

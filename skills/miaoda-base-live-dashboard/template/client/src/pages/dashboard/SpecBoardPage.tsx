@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { logger } from '@lark-apaas/client-toolkit/logger';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { CircleAlert } from 'lucide-react';
@@ -44,13 +45,25 @@ interface SpecPanelProps {
 /** 按面板 kind 选组件；数据形状与内置看板完全一致，风格 / 图表切换全部复用 */
 const SpecPanel: React.FC<SpecPanelProps> = ({ boardKey, meta, data, height, className }) => {
   const pid: string = `spec.${boardKey}.${meta.id}`;
+  // 去重键：同一面板、同一原因只记一次（排查编号每次轮询都会变，不能用它去重）
+  const errKey: string | undefined = data?.kind === 'error' ? `${meta.id}|${data.detail ?? data.message}` : undefined;
+  useEffect(() => {
+    if (data?.kind === 'error') {
+      // 只打到浏览器控制台，界面上不展示内部原因
+      logger.error(`[看板] 面板「${meta.title}」查询失败`, { board: boardKey, panel: meta.id, ref: data.ref, detail: data.detail });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errKey]);
   const subtitle: string | undefined = meta.subtitle ?? (meta.notes.length ? meta.notes.join('；') : undefined);
   if (data?.kind === 'error') {
     return (
       <Panel title={meta.title} subtitle={subtitle} className={className}>
-        <div className="dash-critical flex items-center gap-2 py-8 text-sm" role="alert">
-          <CircleAlert className="size-4" aria-hidden />
-          {data.message}
+        <div className="dash-subtle flex flex-col items-center justify-center gap-1 py-8 text-sm" role="status">
+          <span className="flex items-center gap-2">
+            <CircleAlert className="dash-warning size-4" aria-hidden />
+            {data.message}
+          </span>
+          <span className="text-xs">稍后会自动重试</span>
         </div>
       </Panel>
     );
