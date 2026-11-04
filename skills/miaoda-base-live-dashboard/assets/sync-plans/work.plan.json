@@ -1,0 +1,74 @@
+{
+  "app_id": "<app_id>",
+  "base_url": "<base_url>",
+  "tables": [
+    {
+      "source": "成员",
+      "target": "work_members",
+      "exclude": [],
+      "rename": {
+        "姓名": "member_name",
+        "工号": "employee_no",
+        "部门": "department",
+        "角色": "role",
+        "职级": "job_level",
+        "入职日期": "joined_on"
+      }
+    },
+    {
+      "source": "项目",
+      "target": "work_projects",
+      "exclude": [],
+      "rename": {
+        "项目名称": "project_name",
+        "项目编号": "project_code",
+        "负责人": "owner",
+        "所属部门": "department",
+        "阶段": "stage",
+        "健康度": "health",
+        "优先级": "priority",
+        "开始日期": "start_date",
+        "计划结束日期": "planned_end_date",
+        "上线日期": "launch_date",
+        "预算": "budget",
+        "进度": "progress"
+      }
+    },
+    {
+      "source": "任务",
+      "target": "work_tasks",
+      "exclude": [],
+      "rename": {
+        "任务标题": "title",
+        "任务编号": "task_no",
+        "所属项目": "project",
+        "负责人": "assignee",
+        "负责部门": "department",
+        "类型": "task_type",
+        "优先级": "priority",
+        "状态": "status",
+        "创建日期": "created_on",
+        "计划截止": "due_date",
+        "实际完成日期": "completed_on",
+        "预估工时": "estimated_hours",
+        "实际工时": "actual_hours",
+        "标签": "tags",
+        "交付天数": "lead_days"
+      }
+    },
+    {
+      "source": "里程碑",
+      "target": "work_milestones",
+      "exclude": [],
+      "rename": {
+        "名称": "milestone_name",
+        "所属项目": "project",
+        "类型": "milestone_type",
+        "计划日期": "planned_date",
+        "实际完成日期": "completed_on",
+        "状态": "status",
+        "延期天数": "delay_days"
+      }
+    }
+  ]
+}

@@ -1,0 +1,604 @@
+/*
+ * 看板三套风格。挂在 <html data-dash-style="..."> 上（而不是某个容器），
+ * 这样 shadcn 的 Select / Tooltip 等弹层（portal 到 body）也能拿到同一套配色。
+ * 同时覆盖 shadcn 语义 token（--background / --card / --primary ...），
+ * 所以页面里的 Button、Badge、ToggleGroup 自动跟随风格。
+ */
+
+/* ---------------------------------------------------------------- 深烘焙 espresso */
+html[data-dash-style='espresso'] {
+  color-scheme: dark;
+  --background: hsl(24, 16%, 7%);
+  --foreground: hsl(35, 45%, 92%);
+  --card: hsl(24, 13%, 10%);
+  --card-foreground: hsl(35, 45%, 92%);
+  --popover: hsl(24, 14%, 13%);
+  --popover-foreground: hsl(35, 45%, 92%);
+  --primary: hsl(33, 68%, 61%);
+  --primary-foreground: hsl(24, 20%, 8%);
+  --secondary: hsl(24, 12%, 16%);
+  --secondary-foreground: hsl(35, 45%, 92%);
+  --muted: hsl(24, 12%, 15%);
+  --muted-foreground: hsl(30, 10%, 62%);
+  --accent: hsl(33, 40%, 22%);
+  --accent-foreground: hsl(35, 70%, 85%);
+  --border: hsl(24, 12%, 18%);
+  --input: hsl(24, 12%, 22%);
+  --ring: hsl(33, 68%, 61%);
+  --button-outline: rgba(255, 255, 255, 0.1);
+  --badge-outline: rgba(255, 255, 255, 0.08);
+  --elevate-1: rgba(255, 255, 255, 0.04);
+  --elevate-2: rgba(255, 255, 255, 0.08);
+
+  --dash-bg: #14110f;
+  --dash-panel: #1c1815;
+  --dash-panel-border: #2c2520;
+  --dash-panel-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 8px 24px rgba(0, 0, 0, 0.35);
+  --dash-panel-radius: 14px;
+  --dash-title: #f3ece2;
+  --dash-subtle: #8f8377;
+  --dash-accent: #e0a458;
+  --dash-accent-soft: rgba(224, 164, 88, 0.14);
+  --dash-good: #5cc58a;
+  --dash-warning: #e5b04a;
+  --dash-critical: #f07167;
+  --dash-kpi-value: #f8f1e7;
+  --dash-header-bg: rgba(20, 17, 15, 0.82);
+  --dash-font-num: 'DIN Alternate', 'Bahnschrift', 'Roboto Mono', ui-monospace, monospace;
+  --dash-title-weight: 600;
+}
+
+/* ---------------------------------------------------------------- 燕麦白 oat */
+html[data-dash-style='oat'] {
+  color-scheme: light;
+  --background: hsl(38, 33%, 94%);
+  --foreground: hsl(26, 17%, 10%);
+  --card: hsl(40, 100%, 99%);
+  --card-foreground: hsl(26, 17%, 10%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(26, 17%, 10%);
+  --primary: hsl(29, 53%, 36%);
+  --primary-foreground: hsl(40, 100%, 98%);
+  --secondary: hsl(36, 30%, 90%);
+  --secondary-foreground: hsl(26, 17%, 14%);
+  --muted: hsl(36, 30%, 91%);
+  --muted-foreground: hsl(28, 9%, 42%);
+  --accent: hsl(33, 45%, 86%);
+  --accent-foreground: hsl(29, 53%, 26%);
+  --border: hsl(36, 28%, 86%);
+  --input: hsl(36, 22%, 80%);
+  --ring: hsl(29, 53%, 36%);
+
+  --dash-bg: linear-gradient(180deg, #f7f3ec 0%, #f2ece2 100%);
+  --dash-panel: #fffdf9;
+  --dash-panel-border: #e8dfd2;
+  --dash-panel-shadow: 0 1px 2px rgba(60, 40, 20, 0.05), 0 6px 18px rgba(60, 40, 20, 0.05);
+  --dash-panel-radius: 12px;
+  --dash-title: #1f1a16;
+  --dash-subtle: #8a7f73;
+  --dash-accent: #8b5a2b;
+  --dash-accent-soft: rgba(139, 90, 43, 0.1);
+  --dash-good: #2f9e5b;
+  --dash-warning: #c27a00;
+  --dash-critical: #d64545;
+  --dash-kpi-value: #1f1a16;
+  --dash-header-bg: rgba(247, 243, 236, 0.86);
+  --dash-font-num: 'DIN Alternate', 'Bahnschrift', 'Roboto Mono', ui-monospace, monospace;
+  --dash-title-weight: 600;
+}
+
+/* ---------------------------------------------------------------- 霓虹大屏 neon */
+html[data-dash-style='neon'] {
+  color-scheme: dark;
+  --background: hsl(225, 63%, 6%);
+  --foreground: hsl(214, 100%, 95%);
+  --card: hsl(225, 61%, 11%);
+  --card-foreground: hsl(214, 100%, 95%);
+  --popover: hsl(225, 60%, 13%);
+  --popover-foreground: hsl(214, 100%, 95%);
+  --primary: hsl(188, 86%, 53%);
+  --primary-foreground: hsl(225, 63%, 8%);
+  --secondary: hsl(225, 50%, 16%);
+  --secondary-foreground: hsl(214, 100%, 95%);
+  --muted: hsl(225, 45%, 15%);
+  --muted-foreground: hsl(218, 25%, 54%);
+  --accent: hsl(195, 70%, 18%);
+  --accent-foreground: hsl(188, 86%, 70%);
+  --border: hsl(222, 50%, 20%);
+  --input: hsl(222, 50%, 24%);
+  --ring: hsl(188, 86%, 53%);
+  --button-outline: rgba(120, 200, 255, 0.15);
+  --badge-outline: rgba(120, 200, 255, 0.12);
+  --elevate-1: rgba(120, 200, 255, 0.05);
+  --elevate-2: rgba(120, 200, 255, 0.1);
+
+  --dash-bg: radial-gradient(1000px 500px at 50% -20%, rgba(34, 211, 238, 0.12), transparent 60%),
+    linear-gradient(rgba(34, 211, 238, 0.035) 1px, transparent 1px) 0 0 / 100% 32px,
+    linear-gradient(90deg, rgba(34, 211, 238, 0.035) 1px, transparent 1px) 0 0 / 32px 100%, #060b1a;
+  --dash-panel: linear-gradient(180deg, rgba(15, 30, 66, 0.92), rgba(9, 18, 44, 0.92));
+  --dash-panel-border: rgba(34, 211, 238, 0.22);
+  --dash-panel-shadow: 0 0 0 1px rgba(34, 211, 238, 0.04) inset, 0 0 24px rgba(34, 211, 238, 0.07);
+  --dash-panel-radius: 6px;
+  --dash-title: #e6f1ff;
+  --dash-subtle: #6d82a8;
+  --dash-accent: #22d3ee;
+  --dash-accent-soft: rgba(34, 211, 238, 0.12);
+  --dash-good: #34d399;
+  --dash-warning: #fbbf24;
+  --dash-critical: #fb7185;
+  --dash-kpi-value: #ffffff;
+  --dash-header-bg: rgba(6, 11, 26, 0.85);
+  --dash-font-num: 'DIN Alternate', 'Bahnschrift', 'Roboto Mono', ui-monospace, monospace;
+  --dash-title-weight: 500;
+}
+
+
+/* ---------------------------------------------------------------- 晴空 sky：浅色商务，克制规整 */
+html[data-dash-style='sky'] {
+  color-scheme: light;
+  --background: hsl(216, 26%, 97%);
+  --foreground: hsl(216, 14%, 14%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(216, 14%, 14%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(216, 14%, 14%);
+  --primary: hsl(222, 100%, 60%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(216, 20%, 94%);
+  --secondary-foreground: hsl(216, 14%, 14%);
+  --muted: hsl(216, 20%, 95%);
+  --muted-foreground: hsl(216, 6%, 59%);
+  --accent: hsl(222, 100%, 95%);
+  --accent-foreground: hsl(222, 80%, 45%);
+  --border: hsl(216, 18%, 91%);
+  --input: hsl(216, 16%, 86%);
+  --ring: hsl(222, 100%, 60%);
+
+  --dash-bg: #f4f6f9;
+  --dash-panel: #ffffff;
+  --dash-panel-border: #e4e7ec;
+  --dash-panel-shadow: 0 1px 2px rgba(31, 35, 41, 0.04);
+  --dash-panel-radius: 10px;
+  --dash-kpi-radius: 8px;
+  --dash-kpi-shadow: none;
+  --dash-title: #1f2329;
+  --dash-subtle: #8f959e;
+  --dash-accent: #3370ff;
+  --dash-accent-soft: rgba(51, 112, 255, 0.1);
+  --dash-good: #2ea121;
+  --dash-warning: #de7802;
+  --dash-critical: #e22e28;
+  --dash-kpi-value: #1f2329;
+  --dash-header-bg: rgba(255, 255, 255, 0.92);
+  --dash-font-num: 'DIN Alternate', 'Bahnschrift', 'Helvetica Neue', sans-serif;
+  --dash-title-weight: 600;
+}
+
+/* ---------------------------------------------------------------- 墨石 graphite：中性深灰，单一强调 */
+html[data-dash-style='graphite'] {
+  color-scheme: dark;
+  --background: hsl(216, 12%, 8%);
+  --foreground: hsl(220, 9%, 92%);
+  --card: hsl(214, 11%, 12%);
+  --card-foreground: hsl(220, 9%, 92%);
+  --popover: hsl(214, 11%, 15%);
+  --popover-foreground: hsl(220, 9%, 92%);
+  --primary: hsl(175, 49%, 48%);
+  --primary-foreground: hsl(216, 12%, 8%);
+  --secondary: hsl(214, 10%, 17%);
+  --secondary-foreground: hsl(220, 9%, 92%);
+  --muted: hsl(214, 10%, 16%);
+  --muted-foreground: hsl(210, 4%, 52%);
+  --accent: hsl(175, 35%, 18%);
+  --accent-foreground: hsl(175, 55%, 72%);
+  --border: hsl(214, 10%, 19%);
+  --input: hsl(214, 10%, 24%);
+  --ring: hsl(175, 49%, 48%);
+  --button-outline: rgba(255, 255, 255, 0.09);
+  --badge-outline: rgba(255, 255, 255, 0.07);
+  --elevate-1: rgba(255, 255, 255, 0.04);
+  --elevate-2: rgba(255, 255, 255, 0.08);
+
+  --dash-bg: #121417;
+  --dash-panel: #1a1d21;
+  --dash-panel-border: #2a2e33;
+  --dash-panel-shadow: none;
+  --dash-panel-radius: 6px;
+  --dash-kpi-radius: 4px;
+  --dash-kpi-shadow: none;
+  --dash-title: #e8eaed;
+  --dash-subtle: #80868b;
+  --dash-accent: #3fb8af;
+  --dash-accent-soft: rgba(63, 184, 175, 0.12);
+  --dash-good: #4fc28a;
+  --dash-warning: #e8b04a;
+  --dash-critical: #f07167;
+  --dash-kpi-value: #f1f3f4;
+  --dash-header-bg: rgba(18, 20, 23, 0.9);
+  --dash-font-num: 'DIN Alternate', 'Bahnschrift', 'Helvetica Neue', sans-serif;
+  --dash-title-weight: 500;
+}
+
+/* ---------------------------------------------------------------- 青瓷 celadon：灰绿纸面，衬线标题与数字 */
+html[data-dash-style='celadon'] {
+  color-scheme: light;
+  --background: hsl(140, 12%, 94%);
+  --foreground: hsl(153, 16%, 11%);
+  --card: hsl(120, 14%, 99%);
+  --card-foreground: hsl(153, 16%, 11%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(153, 16%, 11%);
+  --primary: hsl(168, 45%, 34%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(140, 12%, 90%);
+  --secondary-foreground: hsl(153, 16%, 14%);
+  --muted: hsl(140, 12%, 91%);
+  --muted-foreground: hsl(150, 6%, 45%);
+  --accent: hsl(160, 30%, 88%);
+  --accent-foreground: hsl(168, 45%, 24%);
+  --border: hsl(144, 13%, 87%);
+  --input: hsl(144, 10%, 80%);
+  --ring: hsl(168, 45%, 34%);
+
+  --dash-bg: #eef2ef;
+  --dash-panel: #fbfcfb;
+  --dash-panel-border: #d9e1dc;
+  --dash-panel-shadow: none;
+  --dash-panel-radius: 4px;
+  --dash-kpi-radius: 2px;
+  --dash-kpi-shadow: none;
+  --dash-title: #17201c;
+  --dash-subtle: #6b7a73;
+  --dash-accent: #2f7d6d;
+  --dash-accent-soft: rgba(47, 125, 109, 0.1);
+  --dash-good: #2f9e5b;
+  --dash-warning: #b7791f;
+  --dash-critical: #c53030;
+  --dash-kpi-value: #17201c;
+  --dash-header-bg: rgba(238, 242, 239, 0.94);
+  --dash-font-num: 'Songti SC', 'STSong', 'Noto Serif SC', 'Source Han Serif SC', Georgia, serif;
+  --dash-font-title: 'Songti SC', 'STSong', 'Noto Serif SC', 'Source Han Serif SC', Georgia, serif;
+  --dash-title-weight: 700;
+}
+
+/* ---------------------------------------------------------------- 深海 abyss：沉稳投屏，无发光 */
+html[data-dash-style='abyss'] {
+  color-scheme: dark;
+  --background: hsl(206, 52%, 8%);
+  --foreground: hsl(199, 37%, 92%);
+  --card: hsl(205, 49%, 10%);
+  --card-foreground: hsl(199, 37%, 92%);
+  --popover: hsl(205, 46%, 13%);
+  --popover-foreground: hsl(199, 37%, 92%);
+  --primary: hsl(190, 64%, 58%);
+  --primary-foreground: hsl(206, 52%, 8%);
+  --secondary: hsl(205, 40%, 15%);
+  --secondary-foreground: hsl(199, 37%, 92%);
+  --muted: hsl(205, 38%, 14%);
+  --muted-foreground: hsl(200, 17%, 56%);
+  --accent: hsl(190, 45%, 18%);
+  --accent-foreground: hsl(190, 70%, 75%);
+  --border: hsl(204, 42%, 17%);
+  --input: hsl(204, 40%, 22%);
+  --ring: hsl(190, 64%, 58%);
+  --button-outline: rgba(150, 220, 240, 0.12);
+  --badge-outline: rgba(150, 220, 240, 0.1);
+  --elevate-1: rgba(150, 220, 240, 0.04);
+  --elevate-2: rgba(150, 220, 240, 0.08);
+
+  --dash-bg: #0a1620;
+  --dash-panel: #0d1b26;
+  --dash-panel-border: #1a3140;
+  --dash-panel-shadow: none;
+  --dash-panel-radius: 10px;
+  --dash-kpi-radius: 10px;
+  --dash-kpi-shadow: none;
+  --dash-title: #e3eef3;
+  --dash-subtle: #7896a5;
+  --dash-accent: #4fc3d9;
+  --dash-accent-soft: rgba(79, 195, 217, 0.12);
+  --dash-good: #47c78a;
+  --dash-warning: #f2c14e;
+  --dash-critical: #f2766b;
+  --dash-kpi-value: #f5fbfd;
+  --dash-header-bg: rgba(10, 22, 32, 0.92);
+  --dash-font-num: 'DIN Alternate', 'Bahnschrift', 'Helvetica Neue', sans-serif;
+  --dash-title-weight: 500;
+}
+
+/* ---------------------------------------------------------------- 松针 pine：墨绿底配珊瑚色 */
+html[data-dash-style='pine'] {
+  color-scheme: dark;
+  --background: hsl(154, 26%, 7%);
+  --foreground: hsl(140, 20%, 92%);
+  --card: hsl(156, 25%, 10%);
+  --card-foreground: hsl(140, 20%, 92%);
+  --popover: hsl(156, 24%, 13%);
+  --popover-foreground: hsl(140, 20%, 92%);
+  --primary: hsl(14, 100%, 70%);
+  --primary-foreground: hsl(154, 26%, 8%);
+  --secondary: hsl(156, 20%, 15%);
+  --secondary-foreground: hsl(140, 20%, 92%);
+  --muted: hsl(156, 20%, 14%);
+  --muted-foreground: hsl(150, 10%, 55%);
+  --accent: hsl(14, 45%, 20%);
+  --accent-foreground: hsl(14, 100%, 80%);
+  --border: hsl(154, 21%, 17%);
+  --input: hsl(154, 20%, 22%);
+  --ring: hsl(14, 100%, 70%);
+  --button-outline: rgba(255, 255, 255, 0.09);
+  --badge-outline: rgba(255, 255, 255, 0.07);
+  --elevate-1: rgba(255, 255, 255, 0.04);
+  --elevate-2: rgba(255, 255, 255, 0.08);
+
+  --dash-bg: #0e1814;
+  --dash-panel: #13201b;
+  --dash-panel-border: #22342c;
+  --dash-panel-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  --dash-panel-radius: 14px;
+  --dash-kpi-radius: 10px;
+  --dash-kpi-shadow: none;
+  --dash-title: #e6efe9;
+  --dash-subtle: #7f978b;
+  --dash-accent: #ff8a65;
+  --dash-accent-soft: rgba(255, 138, 101, 0.13);
+  --dash-good: #5cc58a;
+  --dash-warning: #e8b04a;
+  --dash-critical: #f26d6d;
+  --dash-kpi-value: #f3f8f5;
+  --dash-header-bg: rgba(14, 24, 20, 0.9);
+  --dash-font-num: 'DIN Alternate', 'Bahnschrift', 'Helvetica Neue', sans-serif;
+  --dash-title-weight: 600;
+}
+
+/* 各风格的标志性元素（每种风格最多两处，整站一致重复） */
+html[data-dash-style='celadon'] .dash-panel-title,
+html[data-dash-style='celadon'] h1,
+html[data-dash-style='celadon'] h2 {
+  font-family: var(--dash-font-title);
+  letter-spacing: 0.02em;
+}
+
+html[data-dash-style='abyss'] .dash-panel {
+  border-top: 2px solid rgba(79, 195, 217, 0.55);
+}
+
+html[data-dash-style='pine'] .dash-panel-title::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 8px;
+  vertical-align: 0.12em;
+  background: #ff8a65;
+}
+
+html[data-dash-style='sky'] .dash-panel-title {
+  font-size: 15px;
+}
+
+html[data-dash-style='graphite'] .dash-panel-title {
+  color: #bdc1c6;
+  font-size: 13px;
+}
+
+/* ---------------------------------------------------------------- 公共骨架 */
+.dash-root {
+  min-height: 100vh;
+  background: var(--dash-bg);
+  background-attachment: fixed;
+  color: var(--foreground);
+}
+
+.dash-header {
+  background: var(--dash-header-bg);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--dash-panel-border);
+}
+
+.dash-panel {
+  position: relative;
+  background: var(--dash-panel);
+  border: 1px solid var(--dash-panel-border);
+  border-radius: var(--dash-panel-radius);
+  box-shadow: var(--dash-panel-shadow);
+}
+
+/* 指标卡与图表面板用不同的圆角 / 阴影，避免「所有卡片一个样」 */
+.dash-kpi {
+  border-radius: var(--dash-kpi-radius, calc(var(--dash-panel-radius) - 4px));
+  box-shadow: var(--dash-kpi-shadow, var(--dash-panel-shadow));
+}
+
+.dash-panel-title {
+  color: var(--dash-title);
+  font-weight: var(--dash-title-weight);
+  letter-spacing: 0.01em;
+}
+
+.dash-subtle {
+  color: var(--dash-subtle);
+}
+
+.dash-num {
+  font-family: var(--dash-font-num);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.dash-kpi-value {
+  color: var(--dash-kpi-value);
+}
+
+.dash-accent {
+  color: var(--dash-accent);
+}
+
+.dash-good {
+  color: var(--dash-good);
+}
+
+.dash-warning {
+  color: var(--dash-warning);
+}
+
+.dash-critical {
+  color: var(--dash-critical);
+}
+
+/* 霓虹风格：面板四角高光 + 标题前的发光竖条 */
+html[data-dash-style='neon'] .dash-panel::before,
+html[data-dash-style='neon'] .dash-panel::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: #22d3ee;
+  border-style: solid;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+html[data-dash-style='neon'] .dash-panel::before {
+  top: -1px;
+  left: -1px;
+  border-width: 2px 0 0 2px;
+}
+
+html[data-dash-style='neon'] .dash-panel::after {
+  right: -1px;
+  bottom: -1px;
+  border-width: 0 2px 2px 0;
+}
+
+html[data-dash-style='neon'] .dash-panel-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 0.9em;
+  margin-right: 8px;
+  vertical-align: -0.1em;
+  background: #22d3ee;
+  box-shadow: 0 0 8px #22d3ee;
+}
+
+html[data-dash-style='neon'] .dash-kpi-value {
+  text-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
+}
+
+/* 深烘焙：标题前的奶油色小圆点 */
+html[data-dash-style='espresso'] .dash-panel-title::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 8px;
+  vertical-align: 0.15em;
+  border-radius: 999px;
+  background: #e0a458;
+}
+
+/* 燕麦白：面板顶部细色条 */
+html[data-dash-style='oat'] .dash-panel {
+  border-top: 2px solid rgba(139, 90, 43, 0.35);
+}
+
+/* 实时脉冲点 */
+.dash-pulse {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--dash-good);
+}
+
+.dash-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 999px;
+  border: 2px solid var(--dash-good);
+  animation: dash-pulse 1.8s ease-out infinite;
+}
+
+.dash-pulse[data-state='stale'] {
+  background: var(--dash-warning);
+}
+
+.dash-pulse[data-state='stale']::after {
+  border-color: var(--dash-warning);
+}
+
+@keyframes dash-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* 新订单闪入 */
+.dash-flash {
+  animation: dash-flash 2.4s ease-out;
+}
+
+@keyframes dash-flash {
+  0% {
+    background: var(--dash-accent-soft);
+    transform: translateX(-6px);
+  }
+
+  15% {
+    transform: translateX(0);
+  }
+
+  100% {
+    background: transparent;
+  }
+}
+
+/* 数值刷新时的轻微高亮 */
+.dash-tick {
+  animation: dash-tick 0.9s ease-out;
+}
+
+@keyframes dash-tick {
+  0% {
+    color: var(--dash-accent);
+  }
+
+  100% {
+    color: var(--dash-kpi-value);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-pulse::after,
+  .dash-flash,
+  .dash-tick {
+    animation: none;
+  }
+}
+
+/* 指标进度条（Meter）：同一色相的轨道 + 填充 */
+.dash-meter-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--dash-accent-soft);
+  overflow: hidden;
+}
+
+.dash-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--dash-accent);
+  transition: width 0.6s ease;
+}
+
+.dash-meter-fill[data-over='true'] {
+  background: var(--dash-good);
+}

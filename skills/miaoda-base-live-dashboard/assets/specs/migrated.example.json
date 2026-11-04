@@ -1,0 +1,701 @@
+{
+  "version": 1,
+  "title": "经营仪表盘（多维表格原生）",
+  "source": {
+    "type": "base-dashboard",
+    "base_url": "https://your-tenant.feishu.cn/base/<base_token>",
+    "base_token": "<base_token>",
+    "dashboard_id": "<dashboard_id>",
+    "dashboard_name": "经营仪表盘（多维表格原生）",
+    "block_count": 9
+  },
+  "timezone": "Asia/Shanghai",
+  "default_style": "espresso",
+  "refresh_seconds": 5,
+  "boards": [
+    {
+      "key": "migrated",
+      "label": "经营仪表盘（多维表格原生）",
+      "description": "由多维表格仪表盘「经营仪表盘（多维表格原生）」迁移，数字已与原仪表盘逐项核对",
+      "default_range": "30d",
+      "panels": [
+        {
+          "id": "p1",
+          "kind": "kpi",
+          "title": "实付营收",
+          "layout": {
+            "h": 2,
+            "w": 6,
+            "x": 0,
+            "y": 0
+          },
+          "origin": {
+            "from": "base-dashboard",
+            "block_id": "p1",
+            "block_type": "statistics"
+          },
+          "notes": [],
+          "table": "订单",
+          "measures": [
+            {
+              "field": "实付金额",
+              "agg": "SUM",
+              "label": "实付金额"
+            }
+          ],
+          "format": "currency",
+          "dimensions": [],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "订单状态",
+                "op": "isNot",
+                "value": [
+                  "已退款"
+                ]
+              },
+              {
+                "field": "订单状态",
+                "op": "isNot",
+                "value": [
+                  "已取消"
+                ]
+              }
+            ]
+          },
+          "time_field": null,
+          "suggested_time_field": "下单时间",
+          "baseline": {
+            "values": {
+              "__total__": 422425.6300000002
+            },
+            "rows": 1,
+            "truncated": false
+          }
+        },
+        {
+          "id": "p2",
+          "kind": "kpi",
+          "title": "订单总数",
+          "layout": {
+            "h": 2,
+            "w": 6,
+            "x": 6,
+            "y": 0
+          },
+          "origin": {
+            "from": "base-dashboard",
+            "block_id": "p2",
+            "block_type": "statistics"
+          },
+          "notes": [],
+          "table": "订单",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "记录数"
+            }
+          ],
+          "format": "number",
+          "dimensions": [],
+          "time_field": null,
+          "suggested_time_field": "下单时间",
+          "baseline": {
+            "values": {
+              "__total__": 7332
+            },
+            "rows": 1,
+            "truncated": false
+          }
+        },
+        {
+          "id": "p3",
+          "kind": "text",
+          "title": "看板说明",
+          "layout": {
+            "h": 4,
+            "w": 12,
+            "x": 0,
+            "y": 2
+          },
+          "origin": {
+            "from": "base-dashboard",
+            "block_id": "p3",
+            "block_type": "text"
+          },
+          "notes": [],
+          "text": "## 鹿野咖啡经营仪表盘\n- 数据源：订单、订单明细、会员三张表\n- **实付营收**不含已退款、已取消订单\n- 每日营收按下单时间统计"
+        },
+        {
+          "id": "p4",
+          "kind": "trend",
+          "title": "每日营收趋势",
+          "layout": {
+            "h": 4,
+            "w": 4,
+            "x": 0,
+            "y": 6
+          },
+          "origin": {
+            "from": "base-dashboard",
+            "block_id": "p4",
+            "block_type": "line"
+          },
+          "notes": [
+            "原图按时间点逐个分组（点过密），迁移后按天聚合；今日视图按小时"
+          ],
+          "table": "订单",
+          "measures": [
+            {
+              "field": "实付金额",
+              "agg": "SUM",
+              "label": "实付金额"
+            }
+          ],
+          "format": "currency",
+          "sort": {
+            "by": "dimension",
+            "order": "asc"
+          },
+          "dimensions": [
+            {
+              "field": "下单时间",
+              "mode": "integrated",
+              "field_type": "datetime"
+            }
+          ],
+          "default_chart": "line",
+          "chart_types": [
+            "line",
+            "area",
+            "bar"
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "订单状态",
+                "op": "isNot",
+                "value": [
+                  "已退款"
+                ]
+              },
+              {
+                "field": "订单状态",
+                "op": "isNot",
+                "value": [
+                  "已取消"
+                ]
+              }
+            ]
+          },
+          "time_field": null,
+          "suggested_time_field": "下单时间",
+          "baseline": {
+            "values": {
+              "2026-09-21 07:00": 55,
+              "2026-09-21 07:02": 74,
+              "2026-09-21 07:06": 21.62,
+              "2026-09-21 07:31": 43.1,
+              "2026-09-21 07:38": 27,
+              "2026-09-21 08:08": 53.84
+            },
+            "rows": 5000,
+            "truncated": true,
+            "note": "示例只保留前 6 项（原始共 5000 项）"
+          }
+        },
+        {
+          "id": "p5",
+          "kind": "category",
+          "title": "渠道营收",
+          "layout": {
+            "h": 4,
+            "w": 4,
+            "x": 4,
+            "y": 6
+          },
+          "origin": {
+            "from": "base-dashboard",
+            "block_id": "p5",
+            "block_type": "column"
+          },
+          "notes": [],
+          "table": "订单",
+          "measures": [
+            {
+              "field": "实付金额",
+              "agg": "SUM",
+              "label": "实付金额"
+            }
+          ],
+          "format": "currency",
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "dimensions": [
+            {
+              "field": "渠道",
+              "mode": "integrated",
+              "field_type": "select"
+            }
+          ],
+          "default_chart": "column",
+          "chart_types": [
+            "column",
+            "bar",
+            "treemap",
+            "donut",
+            "segmented"
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "订单状态",
+                "op": "isNot",
+                "value": [
+                  "已退款"
+                ]
+              },
+              {
+                "field": "订单状态",
+                "op": "isNot",
+                "value": [
+                  "已取消"
+                ]
+              }
+            ]
+          },
+          "time_field": null,
+          "suggested_time_field": "下单时间",
+          "baseline": {
+            "values": {
+              "饿了么": 38675.30000000002,
+              "小程序外送": 48777.25000000002,
+              "企业团购": 49793.87999999999,
+              "堂食": 114343.21,
+              "美团外卖": 53569.21999999997,
+              "到店自提": 117266.76999999986
+            },
+            "rows": 6,
+            "truncated": false
+          }
+        },
+        {
+          "id": "p6",
+          "kind": "category",
+          "title": "支付方式占比",
+          "layout": {
+            "h": 4,
+            "w": 4,
+            "x": 8,
+            "y": 6
+          },
+          "origin": {
+            "from": "base-dashboard",
+            "block_id": "p6",
+            "block_type": "ring"
+          },
+          "notes": [],
+          "table": "订单",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "记录数"
+            }
+          ],
+          "format": "number",
+          "sort": {
+            "by": "dimension",
+            "order": "asc"
+          },
+          "dimensions": [
+            {
+              "field": "支付方式",
+              "mode": "integrated",
+              "field_type": "select"
+            }
+          ],
+          "default_chart": "donut",
+          "chart_types": [
+            "donut",
+            "segmented",
+            "bar",
+            "treemap"
+          ],
+          "time_field": null,
+          "suggested_time_field": "下单时间",
+          "baseline": {
+            "values": {
+              "微信支付": 2707,
+              "支付宝": 1211,
+              "会员储值": 1015,
+              "银行卡": 539,
+              "平台代收": 1860
+            },
+            "rows": 5,
+            "truncated": false
+          }
+        },
+        {
+          "id": "p7",
+          "kind": "category",
+          "title": "门店营收 Top10",
+          "layout": {
+            "h": 4,
+            "w": 4,
+            "x": 0,
+            "y": 10
+          },
+          "origin": {
+            "from": "base-dashboard",
+            "block_id": "p7",
+            "block_type": "ranking"
+          },
+          "notes": [],
+          "table": "订单",
+          "measures": [
+            {
+              "field": "实付金额",
+              "agg": "SUM",
+              "label": "实付金额"
+            }
+          ],
+          "format": "currency",
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "dimensions": [
+            {
+              "field": "门店",
+              "mode": "integrated",
+              "field_type": "link"
+            }
+          ],
+          "default_chart": "bar",
+          "chart_types": [
+            "bar",
+            "column",
+            "treemap"
+          ],
+          "limit": 10,
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "订单状态",
+                "op": "isNot",
+                "value": [
+                  "已退款"
+                ]
+              },
+              {
+                "field": "订单状态",
+                "op": "isNot",
+                "value": [
+                  "已取消"
+                ]
+              }
+            ]
+          },
+          "time_field": null,
+          "suggested_time_field": "下单时间",
+          "baseline": {
+            "values": {
+              "鹿野咖啡·新街口店": 30534.750000000004,
+              "鹿野咖啡·太古里店": 29615.7,
+              "鹿野咖啡·静安嘉里店": 28974.559999999998,
+              "鹿野咖啡·西湖湖滨店": 26813.01,
+              "鹿野咖啡·天河太古汇店": 26774.100000000002,
+              "鹿野咖啡·三里屯店": 23841.329999999998
+            },
+            "rows": 10,
+            "truncated": false,
+            "note": "示例只保留前 6 项（原始共 10 项）"
+          }
+        },
+        {
+          "id": "p8",
+          "kind": "category",
+          "title": "会员等级分布",
+          "layout": {
+            "h": 4,
+            "w": 4,
+            "x": 4,
+            "y": 10
+          },
+          "origin": {
+            "from": "base-dashboard",
+            "block_id": "p8",
+            "block_type": "bar"
+          },
+          "notes": [],
+          "table": "会员",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "记录数"
+            }
+          ],
+          "format": "number",
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "dimensions": [
+            {
+              "field": "会员等级",
+              "mode": "integrated",
+              "field_type": "select"
+            }
+          ],
+          "default_chart": "bar",
+          "chart_types": [
+            "bar",
+            "column",
+            "treemap",
+            "donut",
+            "segmented"
+          ],
+          "time_field": null,
+          "suggested_time_field": "注册日期",
+          "baseline": {
+            "values": {
+              "白银": 233,
+              "黑金": 66,
+              "青铜": 365,
+              "黄金": 136
+            },
+            "rows": 4,
+            "truncated": false
+          }
+        },
+        {
+          "id": "p9",
+          "kind": "stacked",
+          "title": "杯型 × 温度",
+          "layout": {
+            "h": 4,
+            "w": 4,
+            "x": 8,
+            "y": 10
+          },
+          "origin": {
+            "from": "base-dashboard",
+            "block_id": "p9",
+            "block_type": "column"
+          },
+          "notes": [],
+          "table": "订单明细",
+          "measures": [
+            {
+              "field": "数量",
+              "agg": "SUM",
+              "label": "数量"
+            }
+          ],
+          "format": "number",
+          "sort": {
+            "by": "dimension",
+            "order": "asc"
+          },
+          "dimensions": [
+            {
+              "field": "规格",
+              "mode": "integrated",
+              "field_type": "select"
+            },
+            {
+              "field": "温度",
+              "mode": "integrated",
+              "field_type": "select"
+            }
+          ],
+          "default_chart": "stacked",
+          "chart_types": [
+            "stacked",
+            "grouped",
+            "percent"
+          ],
+          "time_field": null,
+          "baseline": {
+            "values": {
+              "中杯 | 热": 3054,
+              "中杯 | 冰": 1595,
+              "中杯 | 少冰": 1185,
+              "大杯 | 热": 2451,
+              "大杯 | 冰": 1313,
+              "大杯 | 少冰": 916
+            },
+            "rows": 11,
+            "truncated": false,
+            "note": "示例只保留前 6 项（原始共 11 项）"
+          }
+        }
+      ],
+      "group": "多维表格迁移"
+    }
+  ],
+  "schema": {
+    "订单": {
+      "primary": "订单号",
+      "fields": {
+        "实付金额": {
+          "type": "number",
+          "format": "currency"
+        },
+        "会员": {
+          "type": "link",
+          "link_table": "会员"
+        },
+        "支付方式": {
+          "type": "select",
+          "multiple": false
+        },
+        "订单金额": {
+          "type": "number",
+          "format": "currency"
+        },
+        "优惠金额": {
+          "type": "number",
+          "format": "currency"
+        },
+        "商品明细": {
+          "type": "link",
+          "link_table": "订单明细"
+        },
+        "下单时间": {
+          "type": "datetime"
+        },
+        "订单状态": {
+          "type": "select",
+          "multiple": false
+        },
+        "渠道": {
+          "type": "select",
+          "multiple": false
+        },
+        "优惠率": {
+          "type": "formula"
+        },
+        "杯数": {
+          "type": "number"
+        },
+        "下单时段": {
+          "type": "formula"
+        },
+        "是否新客": {
+          "type": "checkbox"
+        },
+        "订单号": {
+          "type": "text"
+        },
+        "顾客备注": {
+          "type": "text"
+        },
+        "评价星级": {
+          "type": "number"
+        },
+        "营销活动": {
+          "type": "link",
+          "link_table": "营销活动"
+        },
+        "门店": {
+          "type": "link",
+          "link_table": "门店"
+        }
+      }
+    },
+    "会员": {
+      "primary": "会员昵称",
+      "fields": {
+        "注册日期": {
+          "type": "datetime"
+        },
+        "会员昵称": {
+          "type": "text"
+        },
+        "储值余额": {
+          "type": "number",
+          "format": "currency"
+        },
+        "归属门店": {
+          "type": "link",
+          "link_table": "门店"
+        },
+        "积分": {
+          "type": "number"
+        },
+        "手机号": {
+          "type": "text"
+        },
+        "性别": {
+          "type": "select",
+          "multiple": false
+        },
+        "注册渠道": {
+          "type": "select",
+          "multiple": false
+        },
+        "会员卡号": {
+          "type": "text"
+        },
+        "会员等级": {
+          "type": "select",
+          "multiple": false
+        },
+        "口味偏好": {
+          "type": "select",
+          "multiple": true
+        },
+        "年龄段": {
+          "type": "select",
+          "multiple": false
+        }
+      }
+    },
+    "订单明细": {
+      "primary": "明细编号",
+      "fields": {
+        "明细编号": {
+          "type": "text"
+        },
+        "小计": {
+          "type": "formula"
+        },
+        "数量": {
+          "type": "number"
+        },
+        "订单": {
+          "type": "link",
+          "link_table": "订单"
+        },
+        "温度": {
+          "type": "select",
+          "multiple": false
+        },
+        "甜度": {
+          "type": "select",
+          "multiple": false
+        },
+        "商品": {
+          "type": "link",
+          "link_table": "商品"
+        },
+        "规格": {
+          "type": "select",
+          "multiple": false
+        },
+        "单价": {
+          "type": "number",
+          "format": "currency"
+        }
+      }
+    }
+  },
+  "open_questions": []
+}

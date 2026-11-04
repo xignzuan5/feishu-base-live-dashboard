@@ -1,0 +1,129 @@
+{
+  "app_id": "<app_id>",
+  "base_url": "<base_url>",
+  "tables": [
+    {
+      "source": "门店",
+      "target": "stores",
+      "exclude": [
+        "订单记录",
+        "累计营收",
+        "累计订单数"
+      ],
+      "rename": {
+        "门店名称": "store_name",
+        "门店编码": "store_code",
+        "城市": "city",
+        "大区": "region",
+        "门店类型": "store_type",
+        "经营状态": "status",
+        "开业日期": "opened_on",
+        "店长": "manager",
+        "联系电话": "phone",
+        "座位数": "seats",
+        "月租金": "monthly_rent",
+        "日营收目标": "daily_target",
+        "口碑评分": "rating_score",
+        "支持外卖": "supports_delivery",
+        "门店位置": "location"
+      }
+    },
+    {
+      "source": "商品",
+      "target": "products",
+      "exclude": [
+        "销售明细",
+        "累计销量"
+      ],
+      "rename": {
+        "商品名称": "product_name",
+        "商品编码": "sku",
+        "品类": "category",
+        "售价": "price",
+        "成本": "cost",
+        "标签": "tags",
+        "是否新品": "is_new",
+        "上市日期": "launched_on",
+        "热量kcal": "kcal",
+        "销售状态": "status",
+        "毛利率": "gross_margin"
+      }
+    },
+    {
+      "source": "营销活动",
+      "target": "campaigns",
+      "exclude": [],
+      "rename": {
+        "活动名称": "campaign_name",
+        "活动类型": "campaign_type",
+        "开始日期": "start_date",
+        "结束日期": "end_date",
+        "活动预算": "budget",
+        "折扣力度": "discount_pct",
+        "活动状态": "status",
+        "活动说明": "description"
+      }
+    },
+    {
+      "source": "会员",
+      "target": "members",
+      "exclude": [],
+      "rename": {
+        "会员昵称": "nickname",
+        "会员卡号": "card_no",
+        "会员等级": "level",
+        "性别": "gender",
+        "年龄段": "age_group",
+        "注册日期": "registered_on",
+        "注册渠道": "register_channel",
+        "归属门店": "home_store",
+        "手机号": "phone",
+        "口味偏好": "preferences",
+        "储值余额": "balance",
+        "积分": "points"
+      }
+    },
+    {
+      "source": "订单",
+      "target": "orders",
+      "exclude": [
+        "商品明细",
+        "优惠率",
+        "下单时段"
+      ],
+      "rename": {
+        "订单号": "order_no",
+        "下单时间": "ordered_at",
+        "门店": "store",
+        "会员": "member",
+        "营销活动": "campaign",
+        "渠道": "channel",
+        "支付方式": "pay_method",
+        "订单状态": "status",
+        "订单金额": "amount",
+        "优惠金额": "discount",
+        "实付金额": "paid_amount",
+        "杯数": "cups",
+        "是否新客": "is_new_customer",
+        "评价星级": "rating",
+        "顾客备注": "remark"
+      }
+    },
+    {
+      "source": "订单明细",
+      "target": "order_items",
+      "exclude": [],
+      "rename": {
+        "明细编号": "item_no",
+        "订单": "order_ref",
+        "商品": "product",
+        "数量": "qty",
+        "单价": "unit_price",
+        "规格": "size",
+        "温度": "temperature",
+        "甜度": "sweetness",
+        "小计": "subtotal"
+      }
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "app_id": "<app_id>",
+  "base_url": "<base_url>",
+  "tables": [
+    {
+      "source": "销售人员",
+      "target": "crm_sales_reps",
+      "exclude": [],
+      "rename": {
+        "姓名": "name",
+        "工号": "employee_no",
+        "团队": "team",
+        "职级": "level",
+        "入职日期": "hired_on",
+        "季度目标": "quarterly_target",
+        "手机号": "phone"
+      }
+    },
+    {
+      "source": "客户档案",
+      "target": "crm_customers",
+      "exclude": [],
+      "rename": {
+        "客户名称": "customer_name",
+        "行业": "industry",
+        "规模": "company_size",
+        "来源": "lead_source",
+        "客户等级": "tier",
+        "客户状态": "status",
+        "负责销售": "owner",
+        "所在城市": "city",
+        "创建日期": "created_on",
+        "联系人": "contact_name",
+        "联系人职务": "contact_title"
+      }
+    },
+    {
+      "source": "商机",
+      "target": "crm_deals",
+      "exclude": [],
+      "rename": {
+        "商机名称": "deal_name",
+        "客户": "customer",
+        "负责销售": "owner",
+        "产品线": "product_line",
+        "商机类型": "deal_type",
+        "阶段": "stage",
+        "预计金额": "amount",
+        "赢率": "win_probability",
+        "创建日期": "created_on",
+        "预计成交日期": "expected_close_on",
+        "结单日期": "closed_on",
+        "输单原因": "lost_reason",
+        "客户行业": "customer_industry",
+        "加权金额": "weighted_amount"
+      }
+    },
+    {
+      "source": "跟进记录",
+      "target": "crm_followups",
+      "exclude": [],
+      "rename": {
+        "标题": "title",
+        "客户": "customer",
+        "销售": "sales_rep",
+        "方式": "method",
+        "跟进时间": "followed_at",
+        "下次跟进日期": "next_followup_on",
+        "下次跟进状态": "next_followup_status",
+        "跟进结果": "outcome",
+        "跟进纪要": "notes",
+        "所属团队": "team"
+      }
+    },
+    {
+      "source": "合同回款",
+      "target": "crm_contracts",
+      "exclude": [],
+      "rename": {
+        "合同编号": "contract_no",
+        "客户": "customer",
+        "商机": "deal",
+        "销售": "sales_rep",
+        "合同金额": "contract_amount",
+        "签约日期": "signed_on",
+        "付款方式": "payment_terms",
+        "已回款金额": "received_amount",
+        "最近回款日期": "last_received_on",
+        "回款状态": "collection_status",
+        "待回款金额": "outstanding_amount",
+        "所属团队": "team"
+      }
+    }
+  ]
+}

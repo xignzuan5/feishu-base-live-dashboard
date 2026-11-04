@@ -1,0 +1,1294 @@
+{
+  "version": 1,
+  "title": "星河科技工作管理看板",
+  "source": {
+    "type": "template"
+  },
+  "timezone": "Asia/Shanghai",
+  "default_style": "oat",
+  "design_tone": "corporate",
+  "refresh_seconds": 5,
+  "audience": [
+    "管理层周会：看项目推进与交付风险",
+    "研发负责人 / 项目经理日常值守：看成员负载、验收积压与工时偏差"
+  ],
+  "boards": [
+    {
+      "key": "work",
+      "label": "项目总览",
+      "description": "项目推进、任务新建与完成、逾期风险与负责人分布",
+      "default_range": "30d",
+      "layout": "executive",
+      "panels": [
+        {
+          "id": "new_tasks",
+          "kind": "kpi",
+          "title": "本期新建任务",
+          "subtitle": "创建日期在所选时间内的任务数",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "新建任务"
+            }
+          ],
+          "format": "number",
+          "time_field": "创建日期"
+        },
+        {
+          "id": "done_tasks",
+          "kind": "kpi",
+          "title": "本期完成任务",
+          "subtitle": "实际完成日期在所选时间内的任务数",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "完成任务"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "状态",
+                "op": "is",
+                "value": [
+                  "已完成"
+                ]
+              }
+            ]
+          },
+          "format": "number",
+          "good_when": "up",
+          "time_field": "实际完成日期"
+        },
+        {
+          "id": "due_done_rate",
+          "kind": "kpi",
+          "title": "到期任务完成率",
+          "subtitle": "计划截止在所选时间内的任务中已完成的占比（不含已取消）",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "已完成",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "已完成"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "到期任务",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "isNot",
+                  "value": [
+                    "已取消"
+                  ]
+                }
+              ]
+            }
+          ],
+          "compute": "ratio",
+          "format": "percent",
+          "good_when": "up",
+          "time_field": "计划截止"
+        },
+        {
+          "id": "overdue_tasks",
+          "kind": "kpi",
+          "title": "逾期任务",
+          "subtitle": "当前，计划截止早于今天且未完成、未取消（实时，不受时间范围影响）",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "逾期任务"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "计划截止",
+                "op": "isLess",
+                "value": {
+                  "relative": "today"
+                }
+              },
+              {
+                "field": "状态",
+                "op": "isNot",
+                "value": [
+                  "已完成",
+                  "已取消"
+                ]
+              }
+            ]
+          },
+          "format": "number",
+          "good_when": "down",
+          "time_field": null,
+          "snapshot": true
+        },
+        {
+          "id": "overdue_rate",
+          "kind": "kpi",
+          "title": "逾期率",
+          "subtitle": "当前，已过计划截止的任务（不含已取消）中仍未完成的占比（实时）",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "逾期任务",
+              "where": [
+                {
+                  "field": "计划截止",
+                  "op": "isLess",
+                  "value": {
+                    "relative": "today"
+                  }
+                },
+                {
+                  "field": "状态",
+                  "op": "isNot",
+                  "value": [
+                    "已完成",
+                    "已取消"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "已到期任务",
+              "where": [
+                {
+                  "field": "计划截止",
+                  "op": "isLess",
+                  "value": {
+                    "relative": "today"
+                  }
+                },
+                {
+                  "field": "状态",
+                  "op": "isNot",
+                  "value": [
+                    "已取消"
+                  ]
+                }
+              ]
+            }
+          ],
+          "compute": "ratio",
+          "format": "percent",
+          "good_when": "down",
+          "time_field": null,
+          "snapshot": true
+        },
+        {
+          "id": "active_projects",
+          "kind": "kpi",
+          "title": "进行中项目",
+          "subtitle": "当前，阶段为设计 / 开发 / 测试 / 上线的项目（不含规划与已结项）",
+          "table": "项目",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "项目数"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "阶段",
+                "op": "is",
+                "value": [
+                  "设计",
+                  "开发",
+                  "测试",
+                  "上线"
+                ]
+              }
+            ]
+          },
+          "format": "number",
+          "time_field": null,
+          "snapshot": true
+        },
+        {
+          "id": "created_trend",
+          "kind": "trend",
+          "title": "每日新建任务（按类型）",
+          "subtitle": "项目上线后缺陷会集中冒出来；周一迭代开始时需求集中创建",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "新建任务"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "创建日期"
+            },
+            {
+              "field": "类型"
+            }
+          ],
+          "format": "number",
+          "time_field": "创建日期",
+          "chart_types": [
+            "line",
+            "area",
+            "bar"
+          ],
+          "default_chart": "line"
+        },
+        {
+          "id": "done_trend",
+          "kind": "trend",
+          "title": "每日完成任务数",
+          "subtitle": "按实际完成日期；双周迭代结束日（周五）集中验收",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "完成任务"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "实际完成日期"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "状态",
+                "op": "is",
+                "value": [
+                  "已完成"
+                ]
+              }
+            ]
+          },
+          "format": "number",
+          "time_field": "实际完成日期",
+          "chart_types": [
+            "bar",
+            "area",
+            "line"
+          ],
+          "default_chart": "bar"
+        },
+        {
+          "id": "status_mix",
+          "kind": "category",
+          "title": "新建任务的当前状态",
+          "subtitle": "所选时间内新建的任务，按当前状态计数",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "任务数"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "状态",
+              "order": [
+                "待开始",
+                "进行中",
+                "待验收",
+                "已完成",
+                "已取消"
+              ]
+            }
+          ],
+          "format": "number",
+          "time_field": "创建日期",
+          "chart_types": [
+            "donut",
+            "column",
+            "bar"
+          ],
+          "default_chart": "donut"
+        },
+        {
+          "id": "project_stage",
+          "kind": "category",
+          "title": "项目阶段分布",
+          "subtitle": "全部项目按当前阶段计数",
+          "table": "项目",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "项目数"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "阶段",
+              "order": [
+                "规划",
+                "设计",
+                "开发",
+                "测试",
+                "上线",
+                "已结项"
+              ]
+            }
+          ],
+          "format": "number",
+          "time_field": null,
+          "chart_types": [
+            "column",
+            "bar",
+            "segmented"
+          ],
+          "default_chart": "column"
+        },
+        {
+          "id": "assignee_status",
+          "kind": "stacked",
+          "title": "负责人 × 任务状态",
+          "subtitle": "按进行中任务数取 Top 15；所选时间内新建的任务；按「进行中」数量取前 15 位负责人",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "进行中",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "进行中"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "待验收",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "待验收"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "待开始",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "待开始"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "已完成",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "已完成"
+                  ]
+                }
+              ]
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "负责人"
+            }
+          ],
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "limit": 15,
+          "format": "number",
+          "time_field": "创建日期",
+          "chart_types": [
+            "stacked",
+            "grouped",
+            "percent"
+          ],
+          "default_chart": "stacked"
+        },
+        {
+          "id": "priority_type",
+          "kind": "stacked",
+          "title": "各优先级的任务类型构成",
+          "subtitle": "所选时间内新建的任务",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "需求",
+              "where": [
+                {
+                  "field": "类型",
+                  "op": "is",
+                  "value": [
+                    "需求"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "缺陷",
+              "where": [
+                {
+                  "field": "类型",
+                  "op": "is",
+                  "value": [
+                    "缺陷"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "优化",
+              "where": [
+                {
+                  "field": "类型",
+                  "op": "is",
+                  "value": [
+                    "优化"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "文档",
+              "where": [
+                {
+                  "field": "类型",
+                  "op": "is",
+                  "value": [
+                    "文档"
+                  ]
+                }
+              ]
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "优先级",
+              "order": [
+                "P0",
+                "P1",
+                "P2",
+                "P3"
+              ]
+            }
+          ],
+          "format": "number",
+          "time_field": "创建日期",
+          "chart_types": [
+            "stacked",
+            "percent",
+            "grouped"
+          ],
+          "default_chart": "stacked"
+        },
+        {
+          "id": "overdue_by_assignee",
+          "kind": "table",
+          "title": "逾期任务按负责人",
+          "subtitle": "计划截止早于今天且未完成、未取消（实时）；按逾期数取前 15 位",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "逾期任务"
+            },
+            {
+              "agg": "COUNT",
+              "label": "其中 P0/P1",
+              "where": [
+                {
+                  "field": "优先级",
+                  "op": "is",
+                  "value": [
+                    "P0",
+                    "P1"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "其中缺陷",
+              "where": [
+                {
+                  "field": "类型",
+                  "op": "is",
+                  "value": [
+                    "缺陷"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "其中尚未开始",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "待开始"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "SUM",
+              "field": "预估工时",
+              "label": "逾期预估工时（小时）"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "负责人"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "计划截止",
+                "op": "isLess",
+                "value": {
+                  "relative": "today"
+                }
+              },
+              {
+                "field": "状态",
+                "op": "isNot",
+                "value": [
+                  "已完成",
+                  "已取消"
+                ]
+              }
+            ]
+          },
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "limit": 15,
+          "format": "number",
+          "time_field": null
+        }
+      ],
+      "group": "工作管理"
+    },
+    {
+      "key": "workbench",
+      "label": "成员工作台",
+      "description": "成员在手负载、部门任务状态、工时偏差、交付周期与里程碑达成",
+      "default_range": "7d",
+      "layout": "command",
+      "panels": [
+        {
+          "id": "open_tasks",
+          "kind": "kpi",
+          "title": "在手任务",
+          "subtitle": "当前，状态为待开始 / 进行中 / 待验收的任务（实时）",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "在手任务"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "状态",
+                "op": "is",
+                "value": [
+                  "待开始",
+                  "进行中",
+                  "待验收"
+                ]
+              }
+            ]
+          },
+          "format": "number",
+          "time_field": null,
+          "snapshot": true
+        },
+        {
+          "id": "open_per_head",
+          "kind": "kpi",
+          "title": "人均在手任务",
+          "subtitle": "当前，在手任务数 ÷ 有在手任务的负责人数（实时）",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "在手任务",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "待开始",
+                    "进行中",
+                    "待验收"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT_DISTINCT",
+              "field": "负责人",
+              "label": "负责人数",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "待开始",
+                    "进行中",
+                    "待验收"
+                  ]
+                }
+              ]
+            }
+          ],
+          "compute": "ratio",
+          "format": "decimal",
+          "good_when": "down",
+          "time_field": null,
+          "snapshot": true
+        },
+        {
+          "id": "pending_accept",
+          "kind": "kpi",
+          "title": "待验收积压",
+          "subtitle": "当前，开发已交付、等待验收的任务数（实时）",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "待验收"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "状态",
+                "op": "is",
+                "value": [
+                  "待验收"
+                ]
+              }
+            ]
+          },
+          "format": "number",
+          "good_when": "down",
+          "time_field": null,
+          "snapshot": true
+        },
+        {
+          "id": "avg_lead_days",
+          "kind": "kpi",
+          "title": "平均交付周期（天）",
+          "subtitle": "所选时间内完成的任务，从创建到完成的平均天数",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "AVERAGE",
+              "field": "交付天数",
+              "label": "交付天数",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "已完成"
+                  ]
+                }
+              ]
+            }
+          ],
+          "format": "decimal",
+          "good_when": "down",
+          "time_field": "实际完成日期"
+        },
+        {
+          "id": "hours_ratio",
+          "kind": "kpi",
+          "title": "实际工时 / 预估工时",
+          "subtitle": "所选时间内完成的任务；超过 100% 表示低估了工作量",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "SUM",
+              "field": "实际工时",
+              "label": "实际工时",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "已完成"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "SUM",
+              "field": "预估工时",
+              "label": "预估工时",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "已完成"
+                  ]
+                }
+              ]
+            }
+          ],
+          "compute": "ratio",
+          "format": "percent",
+          "good_when": "down",
+          "time_field": "实际完成日期"
+        },
+        {
+          "id": "milestone_hit_rate",
+          "kind": "kpi",
+          "title": "里程碑达成率",
+          "subtitle": "当前，计划日期已过的里程碑中已达成的占比（实时）",
+          "table": "里程碑",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "已达成",
+              "where": [
+                {
+                  "field": "计划日期",
+                  "op": "isLess",
+                  "value": {
+                    "relative": "today"
+                  }
+                },
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "已达成"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "已到期里程碑",
+              "where": [
+                {
+                  "field": "计划日期",
+                  "op": "isLess",
+                  "value": {
+                    "relative": "today"
+                  }
+                }
+              ]
+            }
+          ],
+          "compute": "ratio",
+          "format": "percent",
+          "good_when": "up",
+          "time_field": null,
+          "snapshot": true
+        },
+        {
+          "id": "hours_trend",
+          "kind": "trend",
+          "title": "每日完成工时：预估 vs 实际",
+          "subtitle": "按实际完成日期汇总已完成任务的工时（小时）",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "SUM",
+              "field": "预估工时",
+              "label": "预估工时"
+            },
+            {
+              "agg": "SUM",
+              "field": "实际工时",
+              "label": "实际工时"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "实际完成日期"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "状态",
+                "op": "is",
+                "value": [
+                  "已完成"
+                ]
+              }
+            ]
+          },
+          "format": "number",
+          "time_field": "实际完成日期",
+          "chart_types": [
+            "line",
+            "area",
+            "bar"
+          ],
+          "default_chart": "line"
+        },
+        {
+          "id": "member_load",
+          "kind": "stacked",
+          "title": "成员在手任务",
+          "subtitle": "按进行中任务数取 Top 20；实时；按「进行中」数量取前 20 位负责人",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "进行中",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "进行中"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "待验收",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "待验收"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "待开始",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "待开始"
+                  ]
+                }
+              ]
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "负责人"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "状态",
+                "op": "is",
+                "value": [
+                  "待开始",
+                  "进行中",
+                  "待验收"
+                ]
+              }
+            ]
+          },
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "limit": 20,
+          "format": "number",
+          "time_field": null,
+          "chart_types": [
+            "stacked",
+            "grouped",
+            "percent"
+          ],
+          "default_chart": "stacked"
+        },
+        {
+          "id": "dept_status",
+          "kind": "stacked",
+          "title": "各部门任务状态",
+          "subtitle": "所选时间内新建的任务，按负责部门 × 当前状态",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "已完成",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "已完成"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "待验收",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "待验收"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "进行中",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "进行中"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "待开始",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "待开始"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "已取消",
+              "where": [
+                {
+                  "field": "状态",
+                  "op": "is",
+                  "value": [
+                    "已取消"
+                  ]
+                }
+              ]
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "负责部门",
+              "order": [
+                "研发",
+                "产品",
+                "设计",
+                "测试",
+                "运营"
+              ]
+            }
+          ],
+          "format": "number",
+          "time_field": "创建日期",
+          "chart_types": [
+            "percent",
+            "stacked",
+            "grouped"
+          ],
+          "default_chart": "percent"
+        },
+        {
+          "id": "type_hours",
+          "kind": "stacked",
+          "title": "各类型平均工时：预估 vs 实际",
+          "subtitle": "所选时间内完成的任务（小时/任务）；缺陷最难估",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "AVERAGE",
+              "field": "预估工时",
+              "label": "平均预估工时"
+            },
+            {
+              "agg": "AVERAGE",
+              "field": "实际工时",
+              "label": "平均实际工时"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "类型",
+              "order": [
+                "需求",
+                "缺陷",
+                "优化",
+                "文档"
+              ]
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "状态",
+                "op": "is",
+                "value": [
+                  "已完成"
+                ]
+              }
+            ]
+          },
+          "format": "decimal",
+          "time_field": "实际完成日期",
+          "chart_types": [
+            "grouped",
+            "stacked"
+          ],
+          "default_chart": "grouped"
+        },
+        {
+          "id": "priority_lead",
+          "kind": "category",
+          "title": "各优先级平均交付周期（天）",
+          "subtitle": "所选时间内完成的任务，从创建到完成的平均天数",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "AVERAGE",
+              "field": "交付天数",
+              "label": "平均交付天数"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "优先级",
+              "order": [
+                "P0",
+                "P1",
+                "P2",
+                "P3"
+              ]
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "状态",
+                "op": "is",
+                "value": [
+                  "已完成"
+                ]
+              }
+            ]
+          },
+          "format": "decimal",
+          "time_field": "实际完成日期",
+          "chart_types": [
+            "column",
+            "bar"
+          ],
+          "default_chart": "column"
+        },
+        {
+          "id": "milestone_status",
+          "kind": "category",
+          "title": "里程碑状态",
+          "subtitle": "全部里程碑按当前状态计数",
+          "table": "里程碑",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "里程碑数"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "状态",
+              "order": [
+                "已达成",
+                "进行中",
+                "未开始",
+                "已延期"
+              ]
+            }
+          ],
+          "format": "number",
+          "time_field": null,
+          "chart_types": [
+            "donut",
+            "column",
+            "bar"
+          ],
+          "default_chart": "donut"
+        },
+        {
+          "id": "overdue_by_project",
+          "kind": "table",
+          "title": "逾期任务按项目",
+          "subtitle": "计划截止早于今天且未完成、未取消（实时）",
+          "table": "任务",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "逾期任务"
+            },
+            {
+              "agg": "COUNT",
+              "label": "其中 P0/P1",
+              "where": [
+                {
+                  "field": "优先级",
+                  "op": "is",
+                  "value": [
+                    "P0",
+                    "P1"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "其中缺陷",
+              "where": [
+                {
+                  "field": "类型",
+                  "op": "is",
+                  "value": [
+                    "缺陷"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT_DISTINCT",
+              "field": "负责人",
+              "label": "涉及负责人"
+            },
+            {
+              "agg": "SUM",
+              "field": "预估工时",
+              "label": "逾期预估工时（小时）"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "所属项目"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "计划截止",
+                "op": "isLess",
+                "value": {
+                  "relative": "today"
+                }
+              },
+              {
+                "field": "状态",
+                "op": "isNot",
+                "value": [
+                  "已完成",
+                  "已取消"
+                ]
+              }
+            ]
+          },
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "limit": 15,
+          "format": "number",
+          "time_field": null
+        }
+      ],
+      "group": "工作管理"
+    }
+  ],
+  "open_questions": [
+    "「逾期」是否把「待验收」算作已交付（当前口径：待验收仍算未完成，会计入逾期）？",
+    "到期任务完成率是否只看按期完成（实际完成日期 ≤ 计划截止）？当前引擎不支持两字段比较，需在多维表格加公式字段后再同步"
+  ],
+  "entities": [
+    [
+      "需求",
+      "缺陷",
+      "优化",
+      "文档"
+    ],
+    [
+      "P0",
+      "P1",
+      "P2",
+      "P3"
+    ],
+    [
+      "研发",
+      "产品",
+      "设计",
+      "测试",
+      "运营"
+    ]
+  ],
+  "group": "工作管理"
+}

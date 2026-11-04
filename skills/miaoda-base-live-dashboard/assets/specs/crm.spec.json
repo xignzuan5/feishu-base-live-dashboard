@@ -1,0 +1,1010 @@
+{
+  "version": 1,
+  "title": "云帆软件销售与客户经营看板",
+  "source": {
+    "type": "template"
+  },
+  "timezone": "Asia/Shanghai",
+  "default_style": "oat",
+  "design_tone": "corporate",
+  "refresh_seconds": 5,
+  "audience": [
+    "销售 VP / 管理层周会：看签约、赢单率、在途管道与回款",
+    "销售主管日常值守：看跟进节奏、超期客户与团队活跃度"
+  ],
+  "open_questions": [
+    "回款率按「全部合同累计」统计；若要看「到期应收」口径，需要在多维表格加计划回款日期后再定义",
+    "赢单率分母只含已结单（赢单 + 输单）商机，在途商机不计入；是否要按「新购 / 增购 / 续约」分开看？",
+    "季度目标已在「销售人员」表维护，但引擎暂不支持跨表算达成率（签约额 ÷ 目标）"
+  ],
+  "boards": [
+    {
+      "key": "crm",
+      "label": "销售业绩",
+      "description": "签约与回款、赢单率、在途管道、销售排行与输单原因",
+      "default_range": "30d",
+      "layout": "executive",
+      "panels": [
+        {
+          "id": "signed_amount",
+          "kind": "kpi",
+          "title": "签约额",
+          "subtitle": "签约日期在所选时间内的合同金额合计",
+          "table": "合同回款",
+          "measures": [
+            {
+              "field": "合同金额",
+              "agg": "SUM",
+              "label": "签约额"
+            }
+          ],
+          "format": "currency",
+          "good_when": "up",
+          "time_field": "签约日期"
+        },
+        {
+          "id": "won_deals",
+          "kind": "kpi",
+          "title": "赢单数",
+          "subtitle": "结单日期在所选时间内、阶段为赢单的商机数",
+          "table": "商机",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "赢单数"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "阶段",
+                "op": "is",
+                "value": [
+                  "赢单"
+                ]
+              }
+            ]
+          },
+          "format": "number",
+          "good_when": "up",
+          "time_field": "结单日期"
+        },
+        {
+          "id": "win_rate",
+          "kind": "kpi",
+          "title": "赢单率",
+          "subtitle": "赢单 ÷（赢单 + 输单），按结单日期统计",
+          "table": "商机",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "赢单",
+              "where": [
+                {
+                  "field": "阶段",
+                  "op": "is",
+                  "value": [
+                    "赢单"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "已结单",
+              "where": [
+                {
+                  "field": "阶段",
+                  "op": "is",
+                  "value": [
+                    "赢单",
+                    "输单"
+                  ]
+                }
+              ]
+            }
+          ],
+          "compute": "ratio",
+          "format": "percent",
+          "good_when": "up",
+          "time_field": "结单日期"
+        },
+        {
+          "id": "pipeline_amount",
+          "kind": "kpi",
+          "title": "在途商机金额",
+          "subtitle": "当前所有未结单商机（线索 → 商务谈判）的预计金额，不随时间范围变化",
+          "table": "商机",
+          "measures": [
+            {
+              "field": "预计金额",
+              "agg": "SUM",
+              "label": "在途金额"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "阶段",
+                "op": "isNot",
+                "value": [
+                  "赢单",
+                  "输单"
+                ]
+              }
+            ]
+          },
+          "format": "currency",
+          "good_when": "up",
+          "time_field": null,
+          "snapshot": true
+        },
+        {
+          "id": "collection_rate",
+          "kind": "kpi",
+          "title": "回款率",
+          "subtitle": "全部合同累计：已回款金额 ÷ 合同金额（回款滞后签约 15–60 天，不按签约期切分）",
+          "table": "合同回款",
+          "measures": [
+            {
+              "field": "已回款金额",
+              "agg": "SUM",
+              "label": "已回款"
+            },
+            {
+              "field": "合同金额",
+              "agg": "SUM",
+              "label": "合同金额"
+            }
+          ],
+          "compute": "ratio",
+          "format": "percent",
+          "good_when": "up",
+          "time_field": null,
+          "snapshot": true
+        },
+        {
+          "id": "new_customers",
+          "kind": "kpi",
+          "title": "新增客户",
+          "subtitle": "创建日期在所选时间内的客户数",
+          "table": "客户档案",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "新增客户"
+            }
+          ],
+          "format": "number",
+          "good_when": "up",
+          "time_field": "创建日期"
+        },
+        {
+          "id": "signed_trend",
+          "kind": "trend",
+          "title": "每日签约额",
+          "subtitle": "按签约日期；月末、季末有冲刺高峰",
+          "table": "合同回款",
+          "measures": [
+            {
+              "field": "合同金额",
+              "agg": "SUM",
+              "label": "签约额"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "签约日期"
+            }
+          ],
+          "format": "currency",
+          "time_field": "签约日期",
+          "chart_types": [
+            "bar",
+            "area",
+            "line"
+          ],
+          "default_chart": "bar"
+        },
+        {
+          "id": "stage_funnel",
+          "kind": "category",
+          "title": "销售漏斗：在途商机数（按阶段）",
+          "subtitle": "当前所有未结单商机，按阶段固定排序，不随时间范围变化",
+          "table": "商机",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "商机数"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "阶段",
+              "order": [
+                "线索",
+                "需求确认",
+                "方案报价",
+                "商务谈判"
+              ]
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "阶段",
+                "op": "isNot",
+                "value": [
+                  "赢单",
+                  "输单"
+                ]
+              }
+            ]
+          },
+          "format": "number",
+          "time_field": null,
+          "chart_types": [
+            "bar",
+            "column"
+          ],
+          "default_chart": "bar"
+        },
+        {
+          "id": "sales_rank",
+          "kind": "category",
+          "title": "销售签约额 Top 10",
+          "subtitle": "按合同的签约销售汇总",
+          "table": "合同回款",
+          "measures": [
+            {
+              "field": "合同金额",
+              "agg": "SUM",
+              "label": "签约额"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "销售"
+            }
+          ],
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "limit": 10,
+          "format": "currency",
+          "time_field": "签约日期",
+          "chart_types": [
+            "bar",
+            "column"
+          ],
+          "default_chart": "bar"
+        },
+        {
+          "id": "team_signed",
+          "kind": "category",
+          "title": "各团队签约额",
+          "table": "合同回款",
+          "measures": [
+            {
+              "field": "合同金额",
+              "agg": "SUM",
+              "label": "签约额"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "所属团队"
+            }
+          ],
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "format": "currency",
+          "time_field": "签约日期",
+          "chart_types": [
+            "column",
+            "bar",
+            "treemap",
+            "donut"
+          ],
+          "default_chart": "column"
+        },
+        {
+          "id": "source_mix",
+          "kind": "category",
+          "title": "新增客户来源构成",
+          "subtitle": "新增客户数，按线索来源",
+          "table": "客户档案",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "新增客户"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "来源"
+            }
+          ],
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "format": "number",
+          "time_field": "创建日期",
+          "chart_types": [
+            "bar",
+            "treemap",
+            "column"
+          ],
+          "default_chart": "bar"
+        },
+        {
+          "id": "industry_stage",
+          "kind": "stacked",
+          "title": "各行业商机阶段构成",
+          "subtitle": "全部商机（含历史）；按赢单数排序，百分比视图可直接比较各行业赢单 / 输单占比",
+          "table": "商机",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "赢单",
+              "where": [
+                {
+                  "field": "阶段",
+                  "op": "is",
+                  "value": [
+                    "赢单"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "商务谈判",
+              "where": [
+                {
+                  "field": "阶段",
+                  "op": "is",
+                  "value": [
+                    "商务谈判"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "方案报价",
+              "where": [
+                {
+                  "field": "阶段",
+                  "op": "is",
+                  "value": [
+                    "方案报价"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "需求确认",
+              "where": [
+                {
+                  "field": "阶段",
+                  "op": "is",
+                  "value": [
+                    "需求确认"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "线索",
+              "where": [
+                {
+                  "field": "阶段",
+                  "op": "is",
+                  "value": [
+                    "线索"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "输单",
+              "where": [
+                {
+                  "field": "阶段",
+                  "op": "is",
+                  "value": [
+                    "输单"
+                  ]
+                }
+              ]
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "客户行业"
+            }
+          ],
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "format": "number",
+          "time_field": null,
+          "chart_types": [
+            "percent",
+            "stacked",
+            "grouped"
+          ],
+          "default_chart": "percent",
+          "notes": [
+            "「客户行业」是商机表上的公式字段：[客户].[行业]，把关联客户的行业带到商机上，供按行业拆分"
+          ]
+        },
+        {
+          "id": "lost_reasons",
+          "kind": "category",
+          "title": "输单原因分布",
+          "subtitle": "结单日期在所选时间内的输单商机数",
+          "table": "商机",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "输单数"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "输单原因"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "阶段",
+                "op": "is",
+                "value": [
+                  "输单"
+                ]
+              }
+            ]
+          },
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "format": "number",
+          "time_field": "结单日期",
+          "chart_types": [
+            "donut",
+            "bar",
+            "segmented"
+          ],
+          "default_chart": "donut",
+          "limit": 5
+        }
+      ],
+      "group": "客户管理"
+    },
+    {
+      "key": "customers",
+      "label": "客户经营",
+      "description": "跟进节奏与超期、跟进方式与结果、团队活跃度、客户等级结构",
+      "default_range": "7d",
+      "layout": "command",
+      "panels": [
+        {
+          "id": "overdue_customers",
+          "kind": "kpi",
+          "title": "跟进超期客户数",
+          "subtitle": "下次跟进日期早于今天、且仍待跟进的客户（当前）",
+          "table": "跟进记录",
+          "measures": [
+            {
+              "field": "客户",
+              "agg": "COUNT_DISTINCT",
+              "label": "超期客户"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "下次跟进日期",
+                "op": "isLess",
+                "value": {
+                  "relative": "today"
+                }
+              },
+              {
+                "field": "下次跟进状态",
+                "op": "is",
+                "value": [
+                  "待跟进"
+                ]
+              }
+            ]
+          },
+          "format": "number",
+          "good_when": "down",
+          "time_field": null,
+          "snapshot": true
+        },
+        {
+          "id": "due_7d",
+          "kind": "kpi",
+          "title": "未来 7 天待跟进客户",
+          "subtitle": "当前，下次跟进日期在今天起 7 天内、仍待跟进的客户",
+          "table": "跟进记录",
+          "measures": [
+            {
+              "field": "客户",
+              "agg": "COUNT_DISTINCT",
+              "label": "待跟进客户"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "下次跟进日期",
+                "op": "isGreaterEqual",
+                "value": {
+                  "relative": "today"
+                }
+              },
+              {
+                "field": "下次跟进日期",
+                "op": "isLess",
+                "value": {
+                  "relative": "+7d"
+                }
+              },
+              {
+                "field": "下次跟进状态",
+                "op": "is",
+                "value": [
+                  "待跟进"
+                ]
+              }
+            ]
+          },
+          "format": "number",
+          "time_field": null,
+          "snapshot": true
+        },
+        {
+          "id": "followups",
+          "kind": "kpi",
+          "title": "跟进次数",
+          "subtitle": "跟进时间在所选时间内的跟进记录数",
+          "table": "跟进记录",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "跟进次数"
+            }
+          ],
+          "format": "number",
+          "good_when": "up",
+          "time_field": "跟进时间"
+        },
+        {
+          "id": "reached_customers",
+          "kind": "kpi",
+          "title": "触达客户数",
+          "subtitle": "所选时间内至少跟进过一次的客户（去重）",
+          "table": "跟进记录",
+          "measures": [
+            {
+              "field": "客户",
+              "agg": "COUNT_DISTINCT",
+              "label": "触达客户"
+            }
+          ],
+          "format": "number",
+          "good_when": "up",
+          "time_field": "跟进时间"
+        },
+        {
+          "id": "progress_rate",
+          "kind": "kpi",
+          "title": "有效跟进率",
+          "subtitle": "跟进结果为「有进展」的跟进 ÷ 全部跟进",
+          "table": "跟进记录",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "有进展",
+              "where": [
+                {
+                  "field": "跟进结果",
+                  "op": "is",
+                  "value": [
+                    "有进展"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "全部跟进"
+            }
+          ],
+          "compute": "ratio",
+          "format": "percent",
+          "good_when": "up",
+          "time_field": "跟进时间"
+        },
+        {
+          "id": "followup_trend",
+          "kind": "trend",
+          "title": "跟进次数趋势",
+          "subtitle": "今日按小时，7 天 / 30 天按天",
+          "table": "跟进记录",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "跟进次数"
+            },
+            {
+              "agg": "COUNT",
+              "label": "有进展",
+              "where": [
+                {
+                  "field": "跟进结果",
+                  "op": "is",
+                  "value": [
+                    "有进展"
+                  ]
+                }
+              ]
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "跟进时间"
+            }
+          ],
+          "format": "number",
+          "time_field": "跟进时间",
+          "chart_types": [
+            "area",
+            "line",
+            "bar"
+          ],
+          "default_chart": "area"
+        },
+        {
+          "id": "overdue_by_rep",
+          "kind": "category",
+          "title": "各销售超期客户数",
+          "subtitle": "当前超期未跟进的客户，按记录里的跟进销售汇总（Top 10）",
+          "table": "跟进记录",
+          "measures": [
+            {
+              "field": "客户",
+              "agg": "COUNT_DISTINCT",
+              "label": "超期客户"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "销售"
+            }
+          ],
+          "filter": {
+            "conjunction": "and",
+            "conditions": [
+              {
+                "field": "下次跟进日期",
+                "op": "isLess",
+                "value": {
+                  "relative": "today"
+                }
+              },
+              {
+                "field": "下次跟进状态",
+                "op": "is",
+                "value": [
+                  "待跟进"
+                ]
+              }
+            ]
+          },
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "limit": 10,
+          "format": "number",
+          "time_field": null,
+          "chart_types": [
+            "bar",
+            "column"
+          ],
+          "default_chart": "bar"
+        },
+        {
+          "id": "method_mix",
+          "kind": "category",
+          "title": "跟进方式分布",
+          "table": "跟进记录",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "跟进次数"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "方式"
+            }
+          ],
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "format": "number",
+          "time_field": "跟进时间",
+          "chart_types": [
+            "donut",
+            "bar",
+            "segmented"
+          ],
+          "default_chart": "donut",
+          "limit": 5
+        },
+        {
+          "id": "outcome_mix",
+          "kind": "category",
+          "title": "跟进结果分布",
+          "table": "跟进记录",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "跟进次数"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "跟进结果",
+              "order": [
+                "有进展",
+                "待推进",
+                "无响应"
+              ]
+            }
+          ],
+          "format": "number",
+          "time_field": "跟进时间",
+          "chart_types": [
+            "segmented",
+            "donut",
+            "bar"
+          ],
+          "default_chart": "segmented"
+        },
+        {
+          "id": "team_followups",
+          "kind": "category",
+          "title": "各团队跟进次数",
+          "table": "跟进记录",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "跟进次数"
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "所属团队"
+            }
+          ],
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "format": "number",
+          "time_field": "跟进时间",
+          "chart_types": [
+            "column",
+            "bar",
+            "donut"
+          ],
+          "default_chart": "column",
+          "notes": [
+            "「所属团队」是跟进记录表上的公式字段：[销售].[团队]"
+          ]
+        },
+        {
+          "id": "tier_status",
+          "kind": "stacked",
+          "title": "客户等级 × 客户状态",
+          "subtitle": "全部客户，不随时间范围变化",
+          "table": "客户档案",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "已成交",
+              "where": [
+                {
+                  "field": "客户状态",
+                  "op": "is",
+                  "value": [
+                    "已成交"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "跟进中",
+              "where": [
+                {
+                  "field": "客户状态",
+                  "op": "is",
+                  "value": [
+                    "跟进中"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "潜在客户",
+              "where": [
+                {
+                  "field": "客户状态",
+                  "op": "is",
+                  "value": [
+                    "潜在客户"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "已流失",
+              "where": [
+                {
+                  "field": "客户状态",
+                  "op": "is",
+                  "value": [
+                    "已流失"
+                  ]
+                }
+              ]
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "客户等级",
+              "order": [
+                "A",
+                "B",
+                "C",
+                "D"
+              ]
+            }
+          ],
+          "format": "number",
+          "time_field": null,
+          "chart_types": [
+            "stacked",
+            "percent",
+            "grouped"
+          ],
+          "default_chart": "stacked"
+        },
+        {
+          "id": "rep_activity",
+          "kind": "table",
+          "title": "销售跟进明细",
+          "subtitle": "所选时间内每位销售的跟进量与结果",
+          "table": "跟进记录",
+          "measures": [
+            {
+              "agg": "COUNT",
+              "label": "跟进次数"
+            },
+            {
+              "field": "客户",
+              "agg": "COUNT_DISTINCT",
+              "label": "触达客户"
+            },
+            {
+              "agg": "COUNT",
+              "label": "有进展",
+              "where": [
+                {
+                  "field": "跟进结果",
+                  "op": "is",
+                  "value": [
+                    "有进展"
+                  ]
+                }
+              ]
+            },
+            {
+              "agg": "COUNT",
+              "label": "无响应",
+              "where": [
+                {
+                  "field": "跟进结果",
+                  "op": "is",
+                  "value": [
+                    "无响应"
+                  ]
+                }
+              ]
+            }
+          ],
+          "dimensions": [
+            {
+              "field": "销售"
+            }
+          ],
+          "sort": {
+            "by": "value",
+            "order": "desc"
+          },
+          "limit": 25,
+          "format": "number",
+          "time_field": "跟进时间"
+        }
+      ],
+      "group": "客户管理"
+    }
+  ],
+  "entities": [
+    [
+      "线索",
+      "需求确认",
+      "方案报价",
+      "商务谈判",
+      "赢单",
+      "输单"
+    ],
+    [
+      "官网",
+      "展会",
+      "转介绍",
+      "电话外呼",
+      "合作伙伴",
+      "内容营销"
+    ],
+    [
+      "华东一组",
+      "华东二组",
+      "华南组",
+      "华北组",
+      "大客户部"
+    ],
+    [
+      "电话",
+      "拜访",
+      "微信",
+      "邮件",
+      "线上会议"
+    ],
+    [
+      "A",
+      "B",
+      "C",
+      "D"
+    ]
+  ],
+  "group": "客户管理"
+}
