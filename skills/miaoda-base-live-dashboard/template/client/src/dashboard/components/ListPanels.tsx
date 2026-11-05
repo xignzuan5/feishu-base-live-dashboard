@@ -176,8 +176,16 @@ export const TablePanel: React.FC<TablePanelProps> = ({ title, subtitle, data, c
             <tbody>
               {rows.map((r, i: number) => (
                 <tr key={String(r[data.columns[1]?.key] ?? i)} className="border-b border-border/50 last:border-b-0 hover:bg-[var(--dash-accent-soft)]">
-                  {data.columns.map((c: TableColumn) => (
-                    <td key={c.key} className={cn('whitespace-nowrap px-2 py-2', c.align === 'right' && 'text-right')}>
+                  {data.columns.map((c: TableColumn, ci: number) => (
+                    <td
+                      key={c.key}
+                      className={cn(
+                        'px-2 py-2',
+                        // 第一列通常是名称（客户、任务），窄屏允许换行，把宽度让给日期、金额等不能断开的列
+                        ci === 0 && data.columns.length > 1 ? 'min-w-[7em] sm:whitespace-nowrap' : 'whitespace-nowrap',
+                        c.align === 'right' && 'text-right',
+                      )}
+                    >
                       {renderCell(c, r[c.key])}
                     </td>
                   ))}

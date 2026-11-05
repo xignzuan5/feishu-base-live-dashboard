@@ -36,7 +36,7 @@
   "key": "work",                          // 路由 /spec/work，只用小写字母、数字、短横线
   "label": "工作管理",
   "description": "项目进度、任务完成与逾期、成员负载",
-  "default_range": "30d",                 // today / 7d / 30d（只对设了 time_field 的面板生效）
+  "default_range": "30d",                 // today / 7d / month（本月，较上月同期）/ 30d / 90d；只对设了 time_field 的面板生效
   "layout": "executive",                  // 默认排版，见 catalog.md「排版」；用户在页面上可切换
   "panels": [ /* 见下 */ ]
 }
@@ -119,7 +119,7 @@
 - `compute: "ratio"`：指标卡取 m0 ÷ m1；**构成 / 多系列面板也可用**，每一行各自取 m0 ÷ m1（如各类型「实际 ÷ 预估工时」），此时 `format` 设 `percent` 或 `decimal`
 - 两个维度时：系列（第二维度）按 `dimensions[1].order` 固定顺序，没给就按合计降序；`limit` 取的是**第一维度按合计的 Top N**（不是组合对）
 - 维度可以按**关联表的字段**分组：`{"field": "客户", "via": "行业"}`（商机按客户行业）；筛选条件仍只能用本表字段
-- 时间范围：`today` / `7d` / `30d` / `90d`
+- 时间范围：`today` / `7d` / `month`（本月 1 日至今，对比上月同期）/ `30d` / `90d`。会上说「本月」「这个月」就用 `month`，不要拿 `30d` 代替
 
 ## 设计约束（`scripts/lint_spec.py` 会检查）
 

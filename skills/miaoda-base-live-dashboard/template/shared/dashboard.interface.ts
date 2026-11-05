@@ -8,13 +8,14 @@
  */
 
 // ---------------------------------------------------------------- 筛选
-export const DASH_RANGES = ['today', '7d', '30d', '90d'] as const;
+export const DASH_RANGES = ['today', '7d', 'month', '30d', '90d'] as const;
 export type DashRange = (typeof DASH_RANGES)[number];
 export const isDashRange = (v: string): v is DashRange =>
   (DASH_RANGES as readonly string[]).includes(v);
 export const DASH_RANGE_LABELS: Record<DashRange, string> = {
   today: '今日',
   '7d': '近 7 天',
+  month: '本月',
   '30d': '近 30 天',
   '90d': '近 90 天',
 };

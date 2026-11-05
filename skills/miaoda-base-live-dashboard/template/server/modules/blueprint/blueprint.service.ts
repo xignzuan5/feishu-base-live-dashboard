@@ -116,12 +116,15 @@ export class SpecBoardService {
         }
         return num(r?.m0);
       };
+      // 比率的分母为 0（如上期一单都没结）时没有可比的值，不能当成 0% 去算环比
+      const comparable = (r: Row | undefined): boolean => p.compute !== 'ratio' || num(r?.m1) > 0;
       const value: number = pickValue(rows[0]);
       let delta: number | null = null;
       if (p.timeField) {
         const prevRows: Row[] = await this.run(p, { start: w.prevStart, end: w.prevEnd, granularity: w.granularity });
         const prev: number = pickValue(prevRows[0]);
-        if (p.format === 'percent') delta = value - prev;
+        if (!comparable(rows[0]) || !comparable(prevRows[0])) delta = null;
+        else if (p.format === 'percent') delta = value - prev;
         else delta = prev > 0 ? (value - prev) / prev : null;
       }
       const kpi: KpiItem = {

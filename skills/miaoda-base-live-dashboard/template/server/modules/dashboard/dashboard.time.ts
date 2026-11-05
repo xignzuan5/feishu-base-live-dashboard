@@ -50,6 +50,32 @@ export const buildWindow = (range: DashRange): TimeWindow => {
       deltaLabel: '较昨日同期',
     };
   }
+  if (range === 'month') {
+    // 本月 1 日至今，对比上月同期（上月 1 日至上月今天的此刻；上月没有的日期，如 3 月 31 日对 2 月，记为空）
+    const start: dayjs.Dayjs = today.startOf('month');
+    const prevStart: dayjs.Dayjs = start.subtract(1, 'month');
+    const days: number = today.date();
+    const keys: string[] = [];
+    const prevKeys: string[] = [];
+    const labels: string[] = [];
+    for (let i = 0; i < days; i += 1) {
+      keys.push(start.add(i, 'day').format('YYYY-MM-DD'));
+      prevKeys.push(i < prevStart.daysInMonth() ? prevStart.add(i, 'day').format('YYYY-MM-DD') : '');
+      labels.push(i === days - 1 ? '今日' : start.add(i, 'day').format('MM-DD'));
+    }
+    return {
+      start: start.toDate(),
+      end: now.toDate(),
+      prevStart: prevStart.toDate(),
+      prevEnd: now.subtract(1, 'month').toDate(),
+      days,
+      granularity: 'day',
+      bucketKeys: keys,
+      prevBucketKeys: prevKeys,
+      bucketLabels: labels,
+      deltaLabel: '较上月同期',
+    };
+  }
   const days: number = range === '7d' ? 7 : range === '90d' ? 90 : 30;
   const start: dayjs.Dayjs = today.subtract(days - 1, 'day');
   const prevStart: dayjs.Dayjs = start.subtract(days, 'day');

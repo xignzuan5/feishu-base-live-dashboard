@@ -205,7 +205,8 @@ const SpecBoardBody: React.FC<{ board: SpecBoardMeta }> = ({ board }) => {
   return (
     <BoardState isLoading={q.isLoading} error={q.error} hasData={Boolean(q.data)}>
       {switcher}
-      <div className={cn('grid gap-3 xl:grid-cols-12', layout === 'focus' && 'mx-auto max-w-4xl')}>
+      {/* 窄屏（手机、平板）两列：指标卡两张一行，图表和清单占满一行；xl 起按 12 栅格 */}
+      <div className={cn('grid grid-cols-2 gap-3 xl:grid-cols-12', layout === 'focus' && 'mx-auto max-w-4xl')}>
         {placed.map((pl: Placement) => (
           <SpecPanel
             key={pl.panel.id}
@@ -213,7 +214,10 @@ const SpecBoardBody: React.FC<{ board: SpecBoardMeta }> = ({ board }) => {
             meta={pl.panel}
             data={panels[pl.panel.id]}
             height={pl.height || 260}
-            className={layout === 'focus' && pl.panel.kind !== 'kpi' ? 'xl:col-span-12' : XL_SPAN[pl.span]}
+            className={cn(
+              pl.panel.kind !== 'kpi' && 'col-span-2',
+              layout === 'focus' && pl.panel.kind !== 'kpi' ? 'xl:col-span-12' : XL_SPAN[pl.span],
+            )}
           />
         ))}
       </div>

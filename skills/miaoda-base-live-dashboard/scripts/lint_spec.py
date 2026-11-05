@@ -16,6 +16,7 @@ KIND_CHARTS = {
     "category": {"bar", "column", "treemap", "donut", "segmented"},
     "stacked": {"stacked", "grouped", "percent"},
 }
+RANGES = ("today", "7d", "month", "30d", "90d")  # 与模板 shared/dashboard.interface.ts 的 DASH_RANGES 一致
 BAD_UP_WORDS = ("逾期", "超期", "退款", "流失", "投诉", "取消", "缺陷", "延期", "未回款", "输单", "让利", "成本")
 EMOJI = re.compile("[\U0001F300-\U0001FAFF☀-➿]")
 
@@ -32,6 +33,8 @@ def lint(spec, path):
         if bk in keys:
             E(bk, "", "看板 key 重复")
         keys.add(bk)
+        if b.get("default_range", "30d") not in RANGES:
+            E(bk, "", "default_range 只能是 %s（「本月」写 month）" % " / ".join(RANGES))
         panels = b.get("panels", [])
         migrated = (spec.get("source") or {}).get("type") == "base-dashboard"
         kpis = [p for p in panels if p.get("kind") == "kpi"]

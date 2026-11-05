@@ -2,6 +2,8 @@
 
 目标：把一场（或几场）需求讨论会，变成一份可以直接生成看板的 `dashboard-spec.json`，**每个面板都能追溯到会上谁说了什么**。命令细节以 `lark-meeting` skill 为准，执行前先加载它；正文文档读取走 `lark-doc`。
 
+**开场先查权限**：读妙记逐字稿要 `minutes:minutes.basic:read`，很多人没开过。缺权限时在开场就授权，不要跑到一半才停下。授权链接 10 分钟有效：在后台运行会一直等待的 `lark-cli auth login --scope "minutes:minutes.basic:read"`，把它打印的链接发给用户；用户点完即生效，不用等他回消息再兑换。只有在不能后台运行的环境里才用 `--no-wait` + `--device-code` 两步走。
+
 ## 1. 找到会议，拿到纪要 / 逐字稿
 
 ```bash
@@ -15,13 +17,14 @@ lark-cli vc +detail --meeting-ids <meeting_id> --as user
 lark-cli note +detail --note-id <note_id> --as user
 lark-cli note +transcript --note-id <note_id> --as user
 
-# 妙记：读逐字稿 / 待办 / 章节
-lark-cli minutes +detail --minute-token <minute_token> --as user
+# 妙记：逐字稿写到 ./minutes/<minute_token>/transcript.txt（--summary / --todo / --chapter 按需加）
+lark-cli minutes +detail --minute-tokens <minute_token> --transcript --as user
 ```
 
 - 已有会议链接、妙记链接、纪要文档链接时，直接从对应产物开始，不要绕回搜索
 - **提炼需求必须读逐字稿原话**，AI 总结只能当目录用——总结会丢掉口径细节（「活跃客户按 30 天算」这类话往往只在原话里）
 - 没有权限时如实告诉用户，并保留已拿到的 `meeting_id` / `note_id` / `minute_token`
+- **说话人**：上传录音生成的妙记只标「Speaker 1 / 2 / 3」。从称呼推断身份（「好的，张总」的上一位、「就按小李说的算」指的那位），在溯源表里写成「张总（Speaker 1，按称呼推断）」，不确定就保留 Speaker 编号
 
 ## 2. 按清单提炼（逐条记下原话出处）
 
@@ -31,7 +34,8 @@ lark-cli minutes +detail --minute-token <minute_token> --as user
 | 要做什么决策 | 「看到逾期就要找人」「决定下季度投哪个渠道」 | 决定 KPI 取舍与排序（最重要的放左上） |
 | 指标与口径 | 名称、公式、包含 / 排除哪些状态、去重口径 | `measures`（含 `where`）、`compute`、`filter`、`subtitle` 写口径 |
 | 参照 | 和目标比？和上期 / 同期比？ | `time_field`（环比）、目标值字段 |
-| 维度与筛选 | 按人 / 部门 / 城市 / 阶段看；要不要时间范围 | `dimensions`、`order`、看板 `default_range` |
+| 数据范围 | 「华东大区」「只看新客户」这类全局限定 | 每个面板的 `filter`；**某张表没有这个字段就筛不了**（如商机表没有团队），列进 `open_questions`，建议在多维表格加查找引用 / 公式字段 |
+| 维度与筛选 | 按人 / 部门 / 城市 / 阶段看；要不要时间范围 | `dimensions`、`order`、看板 `default_range`（「本月」用 `month`，不要拿 `30d` 代替） |
 | 预警 | 「超过 3 天没跟进就标红」 | `where` + 相对日期 `{"relative":"-3d"}`，`good_when: down` |
 | 刷新 | 实时 / 每天 / 每周 | 默认 5 秒实时；只要日报时说明可降频 |
 | 数据来源 | 在哪张多维表格、缺哪些字段 | `source.base_url`；缺字段列进 `open_questions` |
@@ -53,7 +57,7 @@ lark-cli minutes +detail --minute-token <minute_token> --as user
 
 - 每个面板加 `provenance`：`[{ "from": "meeting", "ref": "<妙记或纪要链接>", "quote": "张总：逾期率要单独拎出来看" }]`
 - 会上没说清的口径 **不要猜**，写进 `open_questions`，并在面板 `notes` 里标「口径待确认」
-- 指标名称用业务方会上的原词（他们说「签约额」就别写成「合同金额」）
+- 指标名称用业务方会上的原词（他们说「签约额」就别写成「合同金额」）；但原词里的时间词（「本月签约额」的「本月」）交给看板 `default_range`，标题只写「签约额」，否则用户切到「近 30 天」时标题和数字对不上
 
 ## 4. 和用户确认（用选择框，不让用户打字）
 
