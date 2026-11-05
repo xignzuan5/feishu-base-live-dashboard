@@ -42,6 +42,15 @@ export interface KpiItem {
   goodWhen: 'up' | 'down';
   /** 迷你走势（可选） */
   spark?: number[];
+  /** 绝对阈值（可选）：高于 above 或低于 below 时标红 / 标黄，与环比无关，当前状态类指标也适用 */
+  threshold?: KpiThreshold;
+}
+
+export interface KpiThreshold {
+  above?: number;
+  below?: number;
+  /** 越线后的提示级别，默认 critical（标红） */
+  level?: 'critical' | 'warning';
 }
 
 export interface SeriesPoint {

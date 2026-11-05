@@ -1,4 +1,4 @@
-import type { DashRange, ValueFormat } from '@shared/dashboard.interface';
+import type { DashRange, KpiThreshold, ValueFormat } from '@shared/dashboard.interface';
 import type { SpecLayout, SpecPanelKind } from '@shared/spec-board.interface';
 
 /** 多维表格字段 → 应用数据库列（由 build_spec_bundle.py 根据同步映射生成） */
@@ -56,6 +56,8 @@ export interface SpecPanelDef {
   compute?: 'ratio';
   /** 指标上升是好事还是坏事（逾期率上升是坏事） */
   goodWhen?: 'up' | 'down';
+  /** 仅指标卡：绝对阈值，越线标红（如逾期客户超过 10 个、回款率低于 60%） */
+  alert?: KpiThreshold;
   /** 受时间范围控制的日期字段；null = 全量（与原仪表盘口径一致） */
   timeField: string | null;
   format: ValueFormat;

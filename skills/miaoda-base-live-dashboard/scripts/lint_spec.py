@@ -21,6 +21,36 @@ BAD_UP_WORDS = ("逾期", "超期", "退款", "流失", "投诉", "取消", "缺
 EMOJI = re.compile("[\U0001F300-\U0001FAFF☀-➿]")
 
 
+def lint_alert(p, kind, err, warn):
+    """alert：指标卡的绝对阈值，如 {"above": 10} 或 {"below": 0.6, "level": "warning"}"""
+    a = p["alert"]
+    if kind != "kpi":
+        err("alert 只用于指标卡（kpi）")
+        return
+    if not isinstance(a, dict) or not ({"above", "below"} & set(a)):
+        err('alert 要写成 {"above": 数值} 或 {"below": 数值}')
+        return
+    unknown = set(a) - {"above", "below", "level"}
+    if unknown:
+        err("alert 不认识的键：%s（只有 above / below / level）" % sorted(unknown))
+    nums = {k: a[k] for k in ("above", "below") if k in a}
+    for k, v in nums.items():
+        if isinstance(v, bool) or not isinstance(v, (int, float)):
+            err("alert.%s 要写数字，不要带单位或引号：%r" % (k, v))
+            return
+    if a.get("level", "critical") not in ("critical", "warning"):
+        err("alert.level 只能是 critical（标红）或 warning（标黄）")
+    if p.get("format") == "percent" and any(abs(v) > 1 for v in nums.values()):
+        err("百分比指标的阈值写小数：60% 写 0.6")
+    if "above" in nums and "below" in nums and nums["above"] <= nums["below"]:
+        err("alert.above 要大于 alert.below，否则任何数值都会标红")
+    good = p.get("good_when", "up")
+    if good == "down" and set(nums) == {"below"}:
+        warn("越少越好的指标却设了「低于多少标红」，确认方向（通常是 above）")
+    if good == "up" and set(nums) == {"above"}:
+        warn("越多越好的指标却设了「超过多少标红」，确认方向（通常是 below）")
+
+
 def lint(spec, path):
     errs, warns = [], []
     E = lambda b, p, m: errs.append("[%s%s] %s" % (b, "/" + p if p else "", m))  # noqa: E731
@@ -71,6 +101,8 @@ def lint(spec, path):
                 continue
             if not p.get("table"):
                 E(bk, pid, "缺少 table")
+            if p.get("alert") is not None:
+                lint_alert(p, kind, lambda m: E(bk, pid, m), lambda m: W(bk, pid, m))
             measures = p.get("measures") or []
             if kind == "table" and p.get("columns"):
                 continue  # 记录清单：逐条列字段，不做聚合检查

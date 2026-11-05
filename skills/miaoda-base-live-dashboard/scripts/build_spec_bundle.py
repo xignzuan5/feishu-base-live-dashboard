@@ -111,7 +111,7 @@ def camel_panel(p, ns):
         out["table"] = "%s:%s" % (ns, p["table"])
     for k_src, k_dst in (("subtitle", "subtitle"), ("limit", "limit"), ("layout", "layout"), ("text", "text"),
                          ("sort", "sort"), ("filter", "filter"), ("compute", "compute"), ("good_when", "goodWhen"),
-                         ("columns", "columns")):
+                         ("columns", "columns"), ("alert", "alert")):
         if p.get(k_src) is not None:
             out[k_dst] = p[k_src]
     if p.get("default_chart") or default_chart:

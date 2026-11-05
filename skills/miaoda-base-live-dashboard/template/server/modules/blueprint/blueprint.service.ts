@@ -135,6 +135,7 @@ export class SpecBoardService {
         delta,
         deltaLabel: p.timeField ? w.deltaLabel : '全部数据',
         goodWhen: p.goodWhen ?? 'up',
+        ...(p.alert ? { threshold: p.alert } : {}),
       };
       return { kind: 'kpi', kpi };
     }

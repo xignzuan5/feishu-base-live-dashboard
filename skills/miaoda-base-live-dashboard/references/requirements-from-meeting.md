@@ -36,7 +36,7 @@ lark-cli minutes +detail --minute-tokens <minute_token> --transcript --as user
 | 参照 | 和目标比？和上期 / 同期比？ | `time_field`（环比）、目标值字段 |
 | 数据范围 | 「华东大区」「只看新客户」这类全局限定 | 每个面板的 `filter`；**某张表没有这个字段就筛不了**（如商机表没有团队），列进 `open_questions`，建议在多维表格加查找引用 / 公式字段 |
 | 维度与筛选 | 按人 / 部门 / 城市 / 阶段看；要不要时间范围 | `dimensions`、`order`、看板 `default_range`（「本月」用 `month`，不要拿 `30d` 代替） |
-| 预警 | 「超过 3 天没跟进就标红」 | `where` + 相对日期 `{"relative":"-3d"}`，`good_when: down` |
+| 预警 | 「超过 3 天没跟进就算逾期」「逾期超过 10 个就标红」 | 「什么算逾期」用 `where` + 相对日期 `{"relative":"-3d"}`；「多少个就标红」用指标卡的 `alert: {"above": 10}`。**只说了「多了就标红」没给数字时，不要编阈值**，列进 `open_questions` |
 | 刷新 | 实时 / 每天 / 每周 | 默认 5 秒实时；只要日报时说明可降频 |
 | 数据来源 | 在哪张多维表格、缺哪些字段 | `source.base_url`；缺字段列进 `open_questions` |
 | 风格偏好 | 「科技感」「简洁专业」「大气」「老板爱看」 | `design_tone` → 见下表 |

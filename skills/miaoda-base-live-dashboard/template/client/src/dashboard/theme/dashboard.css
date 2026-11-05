@@ -446,6 +446,17 @@ html[data-dash-style='graphite'] .dash-panel-title {
   color: var(--dash-critical);
 }
 
+/* 指标卡越过阈值：边框和底色带一点状态色，数字和提示文字由组件着色 */
+.dash-kpi[data-alert='critical'] {
+  border-color: color-mix(in srgb, var(--dash-critical) 55%, var(--dash-panel-border));
+  background: color-mix(in srgb, var(--dash-critical) 7%, var(--dash-panel));
+}
+
+.dash-kpi[data-alert='warning'] {
+  border-color: color-mix(in srgb, var(--dash-warning) 55%, var(--dash-panel-border));
+  background: color-mix(in srgb, var(--dash-warning) 7%, var(--dash-panel));
+}
+
 /* 霓虹风格：面板四角高光 + 标题前的发光竖条 */
 html[data-dash-style='neon'] .dash-panel::before,
 html[data-dash-style='neon'] .dash-panel::after {
